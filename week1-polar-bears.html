@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 1 · The Arctic's Vanishing Ice</title>
+<style>
+  :root{
+    --ink:#1a1a1a;
+    --parchment:#faf6ec;
+    --parchment-dark:#f0e9d8;
+    --natgeo-yellow:#ffcc00;
+    --teal:#1b4b43;
+    --teal-light:#2e6e63;
+    --brown:#6b4226;
+    --rule:#d8cdb0;
+    --correct:#1b4b43;
+    --wrong:#a33b2b;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--ink);
+    font-family:Georgia, 'Times New Roman', serif;
+    color:var(--ink);
+  }
+  .frame{
+    border:14px solid var(--natgeo-yellow);
+    min-height:100vh;
+    background:var(--parchment);
+  }
+  header{
+    padding:36px 6vw 24px;
+    border-bottom:3px solid var(--ink);
+    background:var(--ink);
+    color:var(--parchment);
+  }
+  .eyebrow{
+    font-family:'Courier New', monospace;
+    letter-spacing:.25em;
+    font-size:.75rem;
+    color:var(--natgeo-yellow);
+    text-transform:uppercase;
+    margin:0 0 10px;
+  }
+  h1{
+    font-size:clamp(1.6rem,4vw,2.6rem);
+    margin:0 0 8px;
+    line-height:1.15;
+  }
+  .subtitle{
+    font-family:Verdana, sans-serif;
+    font-size:.95rem;
+    color:#cfc9b8;
+    margin:0;
+  }
+  nav.tabs{
+    display:flex;
+    flex-wrap:wrap;
+    gap:2px;
+    background:var(--ink);
+    padding:0 6vw;
+  }
+  nav.tabs button{
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+    letter-spacing:.03em;
+    border:none;
+    padding:14px 18px;
+    background:#2a2a2a;
+    color:#cfc9b8;
+    cursor:pointer;
+    border-top:3px solid transparent;
+  }
+  nav.tabs button.active{
+    background:var(--parchment);
+    color:var(--ink);
+    border-top:3px solid var(--natgeo-yellow);
+    font-weight:bold;
+  }
+  main{
+    padding:36px 6vw 80px;
+    max-width:820px;
+    margin:0 auto;
+  }
+  section.panel{display:none;}
+  section.panel.active{display:block;}
+
+  figure{margin:0 0 24px;}
+  figure img{
+    width:100%;
+    display:block;
+    border:1px solid var(--rule);
+  }
+  figcaption{
+    font-family:Verdana, sans-serif;
+    font-size:.75rem;
+    color:#7a7259;
+    margin-top:6px;
+  }
+
+  .video-wrap{
+    position:relative;
+    padding-top:56.25%;
+    margin:0 0 28px;
+    border:1px solid var(--rule);
+  }
+  .video-wrap iframe{
+    position:absolute;top:0;left:0;width:100%;height:100%;border:0;
+  }
+
+  .toolbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-bottom:20px;
+    padding:12px 16px;
+    background:var(--parchment-dark);
+    border-left:4px solid var(--teal);
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+  }
+  button.audio-btn, button.action-btn{
+    font-family:Verdana, sans-serif;
+    cursor:pointer;
+    border:none;
+    border-radius:3px;
+  }
+  button.action-btn{
+    background:var(--teal);
+    color:#fff;
+    padding:10px 18px;
+    font-size:.85rem;
+  }
+  button.action-btn:hover{background:var(--teal-light);}
+  button.action-btn:disabled{background:#999;cursor:default;}
+
+  .article p{
+    font-size:1.05rem;
+    line-height:1.85;
+    margin:0 0 20px;
+  }
+  .sent{
+    position:relative;
+  }
+  button.spk{
+    background:none;
+    border:none;
+    cursor:pointer;
+    color:var(--teal);
+    font-size:.85em;
+    vertical-align:middle;
+    padding:0 3px;
+    opacity:.55;
+  }
+  button.spk:hover{opacity:1;}
+  .sent.speaking{background:#ffe9a3;}
+
+  h2.section-title{
+    font-size:1.3rem;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:8px;
+    margin:0 0 20px;
+  }
+
+  .vocab-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:14px;
+    margin-bottom:32px;
+  }
+  .vocab-card{
+    background:#fff;
+    border:1px solid var(--rule);
+    border-left:4px solid var(--natgeo-yellow);
+    padding:14px 16px;
+    font-family:Verdana, sans-serif;
+  }
+  .vocab-card .w{
+    font-family:Georgia, serif;
+    font-weight:bold;
+    font-size:1.05rem;
+    color:var(--teal);
+  }
+  .vocab-card .pos{
+    font-style:italic;
+    font-size:.8rem;
+    color:#7a7259;
+    margin-left:6px;
+  }
+  .vocab-card .def{font-size:.88rem;margin:6px 0 4px;}
+  .vocab-card .ex{font-size:.82rem;color:#555;}
+
+  .cloze-box{
+    background:#fff;
+    border:1px solid var(--rule);
+    padding:20px;
+    font-size:1rem;
+    line-height:2.1;
+    font-family:Georgia, serif;
+    margin-bottom:16px;
+  }
+  .cloze-box input{
+    width:120px;
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+    padding:3px 6px;
+    border:none;
+    border-bottom:2px solid var(--teal);
+    background:var(--parchment-dark);
+    text-align:center;
+  }
+  .cloze-box input.correct{border-bottom-color:var(--correct);background:#e3efe9;}
+  .cloze-box input.wrong{border-bottom-color:var(--wrong);background:#f7e5e1;}
+  .wordbank{
+    font-family:Verdana, sans-serif;
+    font-size:.82rem;
+    color:#555;
+    margin-bottom:20px;
+    padding:10px 14px;
+    background:var(--parchment-dark);
+  }
+
+  .qcard{
+    background:#fff;
+    border:1px solid var(--rule);
+    padding:16px 18px;
+    margin-bottom:14px;
+    font-family:Verdana, sans-serif;
+  }
+  .qcard p.q{font-size:.95rem;font-weight:bold;margin:0 0 10px;}
+  .qcard label{
+    display:block;
+    font-size:.88rem;
+    padding:6px 8px;
+    margin-bottom:4px;
+    border:1px solid transparent;
+    border-radius:3px;
+    cursor:pointer;
+  }
+  .qcard label:hover{background:var(--parchment-dark);}
+  .qcard label.correct{background:#e3efe9;border-color:var(--correct);}
+  .qcard label.wrong{background:#f7e5e1;border-color:var(--wrong);}
+  textarea.short-answer{
+    width:100%;
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+    padding:8px;
+    border:1px solid var(--rule);
+    min-height:60px;
+  }
+
+  #score-box{
+    margin-top:20px;
+    padding:14px 18px;
+    background:var(--ink);
+    color:var(--natgeo-yellow);
+    font-family:Verdana, sans-serif;
+    font-size:.9rem;
+    display:none;
+  }
+  footer{
+    text-align:center;
+    font-family:Verdana, sans-serif;
+    font-size:.75rem;
+    color:#7a7259;
+    padding:20px 6vw 40px;
+  }
+</style>
+</head>
+<body>
+<div class="frame">
+
+  <header>
+    <p class="eyebrow">Nat-Geo Reading &middot; Week 1 of 5 &middot; Endangered Animals</p>
+    <h1>The Arctic's Vanishing Ice</h1>
+    <p class="subtitle">A Polar Bear's Struggle to Survive &nbsp;|&nbsp; Reading level: US Grade 6–8 &nbsp;|&nbsp; ~290 words</p>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="reading">📖 Reading</button>
+    <button class="tab-btn" data-tab="vocab">🔤 Vocabulary</button>
+    <button class="tab-btn" data-tab="cloze">✏️ Cloze Test</button>
+    <button class="tab-btn" data-tab="listening">🎧 Listening</button>
+    <button class="tab-btn" data-tab="comprehension">🧠 Comprehension</button>
+  </nav>
+
+  <main>
+
+    <!-- ================= READING ================= -->
+    <section class="panel active" id="reading">
+      <div class="video-wrap">
+        <iframe src="https://www.youtube.com/embed/XdCaBF8NJ00" title="Polar Bear - National Geographic Kids" allowfullscreen></iframe>
+      </div>
+
+      <figure>
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Polar%20Bear%20AdF.jpg" alt="A polar bear jumping between ice floes">
+        <figcaption>A polar bear leaps between ice floes in Svalbard. Photo: Wikimedia Commons.</figcaption>
+      </figure>
+
+      <div class="toolbar">
+        <button class="action-btn" id="play-full">▶ Read Full Article Aloud</button>
+        <button class="action-btn" id="stop-full" style="background:var(--brown);">■ Stop</button>
+        <span>or click 🔊 next to any sentence to hear just that line</span>
+      </div>
+
+      <div class="article" id="article"></div>
+
+      <figure>
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Polar%20bear%20%286867764276%29.jpg" alt="A polar bear standing on Arctic tundra">
+        <figcaption>Without sea ice, polar bears must travel farther to find food. Photo: US Fish and Wildlife Service / Wikimedia Commons.</figcaption>
+      </figure>
+    </section>
+
+    <!-- ================= VOCAB ================= -->
+    <section class="panel" id="vocab">
+      <h2 class="section-title">Key Vocabulary</h2>
+      <div class="vocab-grid" id="vocab-grid"></div>
+    </section>
+
+    <!-- ================= CLOZE ================= -->
+    <section class="panel" id="cloze">
+      <h2 class="section-title">Cloze Test</h2>
+      <p style="font-family:Verdana, sans-serif;font-size:.85rem;">Fill in each blank with the correct word from the word bank. Then click "Check Answers."</p>
+      <div class="wordbank">
+        <strong>Word bank:</strong> carnivores &middot; habitats &middot; vulnerable &middot; adapting &middot; Conservationists &middot; emissions &middot; populations &middot; migration &middot; satellite &middot; track
+      </div>
+      <div class="cloze-box" id="cloze-text"></div>
+      <button class="action-btn" id="check-cloze">Check Answers</button>
+      <span id="cloze-result" style="font-family:Verdana, sans-serif;font-size:.85rem;margin-left:12px;"></span>
+    </section>
+
+    <!-- ================= LISTENING ================= -->
+    <section class="panel" id="listening">
+      <h2 class="section-title">Listening Comprehension</h2>
+      <div class="toolbar">
+        <button class="action-btn" id="play-listen">▶ Play Article Audio</button>
+        <button class="action-btn" id="stop-listen" style="background:var(--brown);">■ Stop</button>
+        <span>Close your eyes and listen — then answer below.</span>
+      </div>
+      <div id="listening-qs"></div>
+      <button class="action-btn" id="check-listening">Check Listening Answers</button>
+    </section>
+
+    <!-- ================= COMPREHENSION ================= -->
+    <section class="panel" id="comprehension">
+      <h2 class="section-title">Reading Comprehension</h2>
+      <div id="comp-qs"></div>
+      <button class="action-btn" id="check-comp">Check Comprehension Answers</button>
+      <div id="score-box"></div>
+    </section>
+
+  </main>
+
+  <footer>National Geographic–style Reading Series &middot; Week 1: Endangered Animals &middot; Built for home English study</footer>
+</div>
+
+<script>
+/* ---------- article sentences ---------- */
+const sentences = [
+"Far above the Arctic Circle, polar bears roam across frozen seas in search of food.",
+"These massive white bears are the largest land carnivores on Earth, and they depend almost entirely on sea ice to survive.",
+"Polar bears use the ice as a platform to hunt seals, their main source of food.",
+"Without ice, hunting becomes nearly impossible.",
+"In recent decades, rising global temperatures have caused Arctic sea ice to melt earlier in the spring and form later in the fall.",
+"This shrinking ice season means polar bears have less time to hunt and store the fat they need to survive through the warmer months.",
+"Scientists who study these animals have observed that many bears are now thinner and weaker than they were just a few decades ago.",
+"Polar bears are excellent swimmers, capable of paddling for many miles across open water.",
+"However, as the distance between ice patches increases, some bears must swim much farther than before, using up valuable energy.",
+"Female bears with cubs face an even greater challenge, since young cubs cannot swim as far as adults.",
+"Conservationists around the world are working to protect polar bear habitats.",
+"Some organizations track bear populations using satellite collars, while others push for policies that reduce greenhouse gas emissions.",
+"Local communities in the Arctic also play an important role, sharing traditional knowledge about the bears' behavior and migration patterns.",
+"Despite these efforts, polar bears remain classified as a vulnerable species.",
+"Their future depends on how quickly humans can slow the effects of climate change.",
+"For now, these remarkable animals continue their ancient journey across the ice, adapting as best they can to a rapidly changing world."
+];
+
+const articleDiv = document.getElementById('article');
+const p1 = document.createElement('p');
+const p2 = document.createElement('p');
+sentences.forEach((s,i)=>{
+  const span = document.createElement('span');
+  span.className = 'sent';
+  span.id = 'sent'+i;
+  span.innerHTML = s + ' <button class="spk" data-i="'+i+'">🔊</button>';
+  (i < 7 ? p1 : p2).appendChild(span);
+  (i < 7 ? p1 : p2).appendChild(document.createTextNode(' '));
+});
+articleDiv.appendChild(p1);
+articleDiv.appendChild(p2);
+
+/* ---------- TTS ---------- */
+let currentUtterances = [];
+function clearHighlight(){document.querySelectorAll('.sent').forEach(s=>s.classList.remove('speaking'));}
+function speakSentence(i){
+  window.speechSynthesis.cancel();
+  clearHighlight();
+  const u = new SpeechSynthesisUtterance(sentences[i]);
+  u.lang='en-US'; u.rate=0.92;
+  const el = document.getElementById('sent'+i);
+  u.onstart = ()=>{ el && el.classList.add('speaking'); };
+  u.onend = ()=>{ el && el.classList.remove('speaking'); };
+  window.speechSynthesis.speak(u);
+}
+function speakAll(onDone){
+  window.speechSynthesis.cancel();
+  clearHighlight();
+  let i=0;
+  function next(){
+    if(i>=sentences.length){ clearHighlight(); if(onDone) onDone(); return; }
+    const u = new SpeechSynthesisUtterance(sentences[i]);
+    u.lang='en-US'; u.rate=0.92;
+    const el = document.getElementById('sent'+i);
+    clearHighlight();
+    u.onstart = ()=>{ el && el.classList.add('speaking'); el && el.scrollIntoView({behavior:'smooth',block:'center'}); };
+    u.onend = ()=>{ i++; next(); };
+    window.speechSynthesis.speak(u);
+  }
+  next();
+}
+document.addEventListener('click', e=>{
+  if(e.target.matches('.spk')){ speakSentence(parseInt(e.target.dataset.i)); }
+});
+document.getElementById('play-full').onclick = ()=>speakAll();
+document.getElementById('stop-full').onclick = ()=>{window.speechSynthesis.cancel(); clearHighlight();};
+document.getElementById('play-listen').onclick = ()=>speakAll();
+document.getElementById('stop-listen').onclick = ()=>{window.speechSynthesis.cancel(); clearHighlight();};
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.onclick = ()=>{
+    window.speechSynthesis.cancel(); clearHighlight();
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  };
+});
+
+/* ---------- vocabulary ---------- */
+const vocab = [
+  {w:"carnivore", pos:"n.", def:"an animal that eats meat", ex:"Lions and polar bears are both carnivores."},
+  {w:"habitat", pos:"n.", def:"the natural home of an animal or plant", ex:"The Arctic is the polar bear's habitat."},
+  {w:"vulnerable", pos:"adj.", def:"at risk of harm or extinction", ex:"Vulnerable species need extra protection."},
+  {w:"adapt", pos:"v.", def:"to change in order to survive new conditions", ex:"Animals must adapt when their environment changes."},
+  {w:"conservationist", pos:"n.", def:"a person who works to protect nature", ex:"A conservationist studies how to save endangered animals."},
+  {w:"emission", pos:"n.", def:"a gas or substance released into the air", ex:"Cars produce emissions that affect the climate."},
+  {w:"population", pos:"n.", def:"the total number of one species in an area", ex:"The polar bear population is shrinking in some regions."},
+  {w:"migration", pos:"n.", def:"seasonal movement of animals from place to place", ex:"Birds are famous for their long migration each year."},
+  {w:"satellite", pos:"n.", def:"a device in space that sends and collects data", ex:"Scientists use satellite collars to track animals."},
+  {w:"track", pos:"v.", def:"to follow and monitor the movement of something", ex:"Researchers track bears to learn about their habits."}
+];
+const vg = document.getElementById('vocab-grid');
+vocab.forEach(v=>{
+  const c = document.createElement('div');
+  c.className='vocab-card';
+  c.innerHTML = `<span class="w">${v.w}</span><span class="pos">${v.pos}</span>
+    <div class="def">${v.def}</div>
+    <div class="ex">"${v.ex}"</div>`;
+  vg.appendChild(c);
+});
+
+/* ---------- cloze ---------- */
+const clozeAnswers = ["carnivores","habitats","vulnerable","adapting","Conservationists","emissions","populations","migration","satellite","track"];
+const clozeHTML = `
+These massive white bears are the largest land <input data-a="0"> on Earth, and they depend almost entirely on sea ice to survive.
+Without ice, hunting becomes nearly impossible.
+Scientists have observed that many bears are thinner than before.
+For now, these remarkable animals continue their ancient journey across the ice, <input data-a="3"> as best they can to a rapidly changing world.<br><br>
+<input data-a="4"> around the world are working to protect polar bear <input data-a="1">. Some organizations <input data-a="9"> bear <input data-a="6"> using <input data-a="8"> collars, while others push for policies that reduce greenhouse gas <input data-a="5">. Local communities also share knowledge about the bears' <input data-a="7"> patterns.<br><br>
+Despite these efforts, polar bears remain classified as a <input data-a="2"> species.
+`;
+document.getElementById('cloze-text').innerHTML = clozeHTML;
+document.getElementById('check-cloze').onclick = ()=>{
+  const inputs = document.querySelectorAll('#cloze-text input');
+  let correct=0;
+  inputs.forEach(inp=>{
+    const ans = clozeAnswers[parseInt(inp.dataset.a)];
+    const val = inp.value.trim();
+    if(val.toLowerCase()===ans.toLowerCase()){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  document.getElementById('cloze-result').textContent = `${correct} / ${inputs.length} correct`;
+};
+
+/* ---------- listening questions ---------- */
+const listeningQs = [
+  {q:"What is the main problem described in this article?", opts:["Polar bears are too big","Melting sea ice makes hunting difficult for polar bears","Polar bears eat too many seals","Scientists don't study polar bears"], correct:1},
+  {q:"What do polar bears use sea ice for?", opts:["To sleep all winter","To hunt seals","To swim faster","To build dens"], correct:1},
+  {q:"Why must some polar bears swim farther than before?", opts:["They enjoy swimming","Ice patches are farther apart","Seals live only in deep water","It is warmer in the water"], correct:1},
+  {q:"Which group faces an even greater challenge when swimming long distances?", opts:["Adult male bears","Female bears with cubs","Young male bears","All bears equally"], correct:1},
+  {q:"How do some organizations track polar bear populations?", opts:["Counting footprints only","Satellite collars","Aerial photos only","Local interviews only"], correct:1},
+  {q:"What does the article say about the future of polar bears?", opts:["It is certain they will disappear","It depends on how fast humans slow climate change","It doesn't matter","They will move to Antarctica"], correct:1}
+];
+function buildMC(container, list, namePrefix){
+  list.forEach((item,i)=>{
+    const card = document.createElement('div');
+    card.className='qcard';
+    let optsHTML = item.opts.map((o,j)=>
+      `<label><input type="radio" name="${namePrefix}${i}" value="${j}"> ${o}</label>`
+    ).join('');
+    card.innerHTML = `<p class="q">${i+1}. ${item.q}</p>${optsHTML}`;
+    container.appendChild(card);
+  });
+}
+buildMC(document.getElementById('listening-qs'), listeningQs, 'listen');
+document.getElementById('check-listening').onclick = ()=>{
+  listeningQs.forEach((item,i)=>{
+    document.getElementsByName('listen'+i).forEach(radio=>{
+      const label = radio.parentElement;
+      label.classList.remove('correct','wrong');
+      if(parseInt(radio.value)===item.correct && radio.checked) label.classList.add('correct');
+      else if(radio.checked) label.classList.add('wrong');
+      else if(parseInt(radio.value)===item.correct) label.classList.add('correct');
+    });
+  });
+};
+
+/* ---------- reading comprehension ---------- */
+const compQs = [
+  {q:"What is this article mainly about?", opts:["How polar bears hunt seals","How melting Arctic ice threatens polar bears' survival","The size of polar bears","How to visit the Arctic"], correct:1},
+  {q:"According to the article, what has happened to Arctic sea ice in recent decades?", opts:["It melts earlier and forms later than before","It has stayed exactly the same","It only melts in winter","It has gotten thicker"], correct:0},
+  {q:"Why do you think female bears with cubs face 'an even greater challenge' when swimming long distances? (Think about it, then choose the best answer.)", opts:["Cubs cannot swim as far as adult bears, so mothers must protect them over long distances","Female bears are afraid of water","Cubs prefer to stay on land","Mothers swim faster than cubs so they leave them behind"], correct:0},
+  {q:"In the sentence \"Their future depends on how quickly humans can slow the effects of climate change,\" what does the word 'effects' most likely mean?", opts:["Special movie tricks","The results or impacts of something","A type of medicine","A kind of weather"], correct:1}
+];
+buildMC(document.getElementById('comp-qs'), compQs, 'comp');
+document.getElementById('check-comp').onclick = ()=>{
+  let correctCount=0;
+  compQs.forEach((item,i)=>{
+    document.getElementsByName('comp'+i).forEach(radio=>{
+      const label = radio.parentElement;
+      label.classList.remove('correct','wrong');
+      if(parseInt(radio.value)===item.correct){
+        label.classList.add('correct');
+        if(radio.checked) correctCount++;
+      } else if(radio.checked){
+        label.classList.add('wrong');
+      }
+    });
+  });
+  const box = document.getElementById('score-box');
+  box.style.display='block';
+  box.textContent = `Reading Comprehension Score: ${correctCount} / ${compQs.length}`;
+};
+</script>
+</body>
+</html>
