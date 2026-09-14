@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Extra Unit · Vanishing Wildlife</title>
+<style>
+  :root{
+    --ink:#1a1a1a;
+    --parchment:#faf6ec;
+    --parchment-dark:#f0e9d8;
+    --natgeo-yellow:#ffcc00;
+    --teal:#1b4b43;
+    --teal-light:#2e6e63;
+    --brown:#6b4226;
+    --rule:#d8cdb0;
+    --correct:#1b4b43;
+    --wrong:#a33b2b;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--ink);
+    font-family:Georgia, 'Times New Roman', serif;
+    color:var(--ink);
+  }
+  .frame{
+    border:14px solid var(--natgeo-yellow);
+    min-height:100vh;
+    background:var(--parchment);
+  }
+  header{
+    padding:36px 6vw 24px;
+    border-bottom:3px solid var(--ink);
+    background:var(--ink);
+    color:var(--parchment);
+  }
+  .eyebrow{
+    font-family:'Courier New', monospace;
+    letter-spacing:.25em;
+    font-size:.75rem;
+    color:var(--natgeo-yellow);
+    text-transform:uppercase;
+    margin:0 0 10px;
+  }
+  h1{
+    font-size:clamp(1.6rem,4vw,2.6rem);
+    margin:0 0 8px;
+    line-height:1.15;
+  }
+  .subtitle{
+    font-family:Verdana, sans-serif;
+    font-size:.95rem;
+    color:#cfc9b8;
+    margin:0;
+  }
+  nav.tabs{
+    display:flex;
+    flex-wrap:wrap;
+    gap:2px;
+    background:var(--ink);
+    padding:0 6vw;
+  }
+  nav.tabs button{
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+    letter-spacing:.03em;
+    border:none;
+    padding:14px 18px;
+    background:#2a2a2a;
+    color:#cfc9b8;
+    cursor:pointer;
+    border-top:3px solid transparent;
+  }
+  nav.tabs button.active{
+    background:var(--parchment);
+    color:var(--ink);
+    border-top:3px solid var(--natgeo-yellow);
+    font-weight:bold;
+  }
+  main{
+    padding:36px 6vw 80px;
+    max-width:820px;
+    margin:0 auto;
+  }
+  section.panel{display:none;}
+  section.panel.active{display:block;}
+
+  figure{margin:0 0 24px;}
+  figure img{
+    width:100%;
+    display:block;
+    border:1px solid var(--rule);
+  }
+  figcaption{
+    font-family:Verdana, sans-serif;
+    font-size:.75rem;
+    color:#7a7259;
+    margin-top:6px;
+  }
+
+  .video-wrap{
+    position:relative;
+    padding-top:56.25%;
+    margin:0 0 28px;
+    border:1px solid var(--rule);
+  }
+  .video-wrap iframe{
+    position:absolute;top:0;left:0;width:100%;height:100%;border:0;
+  }
+
+  .toolbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-bottom:20px;
+    padding:12px 16px;
+    background:var(--parchment-dark);
+    border-left:4px solid var(--teal);
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+  }
+  button.audio-btn, button.action-btn{
+    font-family:Verdana, sans-serif;
+    cursor:pointer;
+    border:none;
+    border-radius:3px;
+  }
+  button.action-btn{
+    background:var(--teal);
+    color:#fff;
+    padding:10px 18px;
+    font-size:.85rem;
+  }
+  button.action-btn:hover{background:var(--teal-light);}
+  button.action-btn:disabled{background:#999;cursor:default;}
+
+  .article p{
+    font-size:1.05rem;
+    line-height:1.85;
+    margin:0 0 20px;
+  }
+  .sent{
+    position:relative;
+  }
+  button.spk{
+    background:none;
+    border:none;
+    cursor:pointer;
+    color:var(--teal);
+    font-size:.85em;
+    vertical-align:middle;
+    padding:0 3px;
+    opacity:.55;
+  }
+  button.spk:hover{opacity:1;}
+  .sent.speaking{background:#ffe9a3;}
+
+  h2.section-title{
+    font-size:1.3rem;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:8px;
+    margin:0 0 20px;
+  }
+
+  .vocab-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:14px;
+    margin-bottom:32px;
+  }
+  .vocab-card{
+    background:#fff;
+    border:1px solid var(--rule);
+    border-left:4px solid var(--natgeo-yellow);
+    padding:14px 16px;
+    font-family:Verdana, sans-serif;
+  }
+  .vocab-card .w{
+    font-family:Georgia, serif;
+    font-weight:bold;
+    font-size:1.05rem;
+    color:var(--teal);
+  }
+  .vocab-card .pos{
+    font-style:italic;
+    font-size:.8rem;
+    color:#7a7259;
+    margin-left:6px;
+  }
+  .vocab-card .def{font-size:.88rem;margin:6px 0 4px;}
+  .vocab-card .ex{font-size:.82rem;color:#555;}
+
+  .cloze-box{
+    background:#fff;
+    border:1px solid var(--rule);
+    padding:20px;
+    font-size:1rem;
+    line-height:2.1;
+    font-family:Georgia, serif;
+    margin-bottom:16px;
+  }
+  .cloze-box input{
+    width:120px;
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+    padding:3px 6px;
+    border:none;
+    border-bottom:2px solid var(--teal);
+    background:var(--parchment-dark);
+    text-align:center;
+  }
+  .cloze-box input.correct{border-bottom-color:var(--correct);background:#e3efe9;}
+  .cloze-box input.wrong{border-bottom-color:var(--wrong);background:#f7e5e1;}
+  .wordbank{
+    font-family:Verdana, sans-serif;
+    font-size:.82rem;
+    color:#555;
+    margin-bottom:20px;
+    padding:10px 14px;
+    background:var(--parchment-dark);
+  }
+
+  .qcard{
+    background:#fff;
+    border:1px solid var(--rule);
+    padding:16px 18px;
+    margin-bottom:14px;
+    font-family:Verdana, sans-serif;
+  }
+  .qcard p.q{font-size:.95rem;font-weight:bold;margin:0 0 10px;}
+  .qcard label{
+    display:block;
+    font-size:.88rem;
+    padding:6px 8px;
+    margin-bottom:4px;
+    border:1px solid transparent;
+    border-radius:3px;
+    cursor:pointer;
+  }
+  .qcard label:hover{background:var(--parchment-dark);}
+  .qcard label.correct{background:#e3efe9;border-color:var(--correct);}
+  .qcard label.wrong{background:#f7e5e1;border-color:var(--wrong);}
+  textarea.short-answer{
+    width:100%;
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+    padding:8px;
+    border:1px solid var(--rule);
+    min-height:60px;
+  }
+
+  #score-box{
+    margin-top:20px;
+    padding:14px 18px;
+    background:var(--ink);
+    color:var(--natgeo-yellow);
+    font-family:Verdana, sans-serif;
+    font-size:.9rem;
+    display:none;
+  }
+  footer{
+    text-align:center;
+    font-family:Verdana, sans-serif;
+    font-size:.75rem;
+    color:#7a7259;
+    padding:20px 6vw 40px;
+  }
+</style>
+</head>
+<body>
+<div class="frame">
+
+  <header>
+    <p class="eyebrow">Nat-Geo Reading &middot; Extra Unit &middot; Biodiversity &amp; Conservation</p>
+    <h1>Vanishing Wildlife: A Planet in Trouble</h1>
+    <p class="subtitle">A Global Look at Species Decline &nbsp;|&nbsp; Reading level: US Grade 6–8 &nbsp;|&nbsp; ~300 words &nbsp;|&nbsp; Supplementary listening practice (inspired by Breaking News English)</p>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="reading">📖 Reading</button>
+    <button class="tab-btn" data-tab="vocab">🔤 Vocabulary</button>
+    <button class="tab-btn" data-tab="cloze">✏️ Cloze Test</button>
+    <button class="tab-btn" data-tab="listening">🎧 Listening</button>
+    <button class="tab-btn" data-tab="comprehension">🧠 Comprehension</button>
+  </nav>
+
+  <main>
+
+    <!-- ================= READING ================= -->
+    <section class="panel active" id="reading">
+      <div class="video-wrap">
+        <iframe src="https://www.youtube.com/embed/c4-KpR1HrNs" title="Tracking Amazon Deforestation - NASA" allowfullscreen></iframe>
+      </div>
+
+      <figure>
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Jaguar.jpg" alt="A jaguar, one of the many species living in tropical rainforests">
+        <figcaption>Jaguars are one of thousands of species that depend on tropical rainforest habitat. Photo: Wikimedia Commons.</figcaption>
+      </figure>
+
+      <div class="toolbar">
+        <button class="action-btn" id="play-full">▶ Read Full Article Aloud</button>
+        <button class="action-btn" id="stop-full" style="background:var(--brown);">■ Stop</button>
+        <span>or click 🔊 next to any sentence to hear just that line</span>
+      </div>
+
+      <div class="article" id="article"></div>
+
+      <figure>
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Amazonie%20deforestation.jpg" alt="Aerial view of deforestation and road-building in the Amazon rainforest">
+        <figcaption>Habitat destruction, like clearing forest for roads and farms, is a leading cause of wildlife decline. Photo: Wikimedia Commons.</figcaption>
+      </figure>
+    </section>
+
+    <!-- ================= VOCAB ================= -->
+    <section class="panel" id="vocab">
+      <h2 class="section-title">Key Vocabulary</h2>
+      <div class="vocab-grid" id="vocab-grid"></div>
+    </section>
+
+    <!-- ================= CLOZE ================= -->
+    <section class="panel" id="cloze">
+      <h2 class="section-title">Cloze Test</h2>
+      <p style="font-family:Verdana, sans-serif;font-size:.85rem;">Fill in each blank with the correct word from the word bank. Then click "Check Answers."</p>
+      <div class="wordbank">
+        <strong>Word bank:</strong> biodiversity &middot; species &middot; decline &middot; Pollution &middot; Tropical &middot; ecosystems &middot; Conservation &middot; reserves &middot; monitor &middot; sustainable
+      </div>
+      <div class="cloze-box" id="cloze-text"></div>
+      <button class="action-btn" id="check-cloze">Check Answers</button>
+      <span id="cloze-result" style="font-family:Verdana, sans-serif;font-size:.85rem;margin-left:12px;"></span>
+    </section>
+
+    <!-- ================= LISTENING ================= -->
+    <section class="panel" id="listening">
+      <h2 class="section-title">Listening Comprehension</h2>
+      <div class="toolbar">
+        <button class="action-btn" id="play-listen">▶ Play Article Audio</button>
+        <button class="action-btn" id="stop-listen" style="background:var(--brown);">■ Stop</button>
+        <span>Close your eyes and listen — then answer below.</span>
+      </div>
+      <div id="listening-qs"></div>
+      <button class="action-btn" id="check-listening">Check Listening Answers</button>
+    </section>
+
+    <!-- ================= COMPREHENSION ================= -->
+    <section class="panel" id="comprehension">
+      <h2 class="section-title">Reading Comprehension</h2>
+      <div id="comp-qs"></div>
+      <button class="action-btn" id="check-comp">Check Comprehension Answers</button>
+      <div id="score-box"></div>
+    </section>
+
+  </main>
+
+  <footer>National Geographic–style Reading Series &middot; Extra Unit: Vanishing Wildlife &middot; Content inspired by Breaking News English's "Wildlife Loss" lesson, rewritten as original text for this course</footer>
+</div>
+
+<script>
+/* ---------- article sentences ---------- */
+const sentences = [
+"Around the world, wild animal populations are shrinking at an alarming rate.",
+"Scientists who study global biodiversity report that many species of mammals, birds, fish, and reptiles have declined sharply over the past fifty years.",
+"Some researchers estimate that wildlife populations have dropped by more than half during this period.",
+"Several factors are driving this decline.",
+"As the human population grows, more land is cleared for farming, cities, and roads.",
+"This process, called habitat destruction, leaves fewer safe places for wild animals to live and reproduce.",
+"Pollution, hunting, and the effects of a changing climate add even more pressure on already struggling species.",
+"The loss of wildlife does not happen evenly across the globe.",
+"Tropical regions, especially in South America and parts of Asia, have experienced some of the steepest declines.",
+"Rainforests in these areas are home to an enormous variety of species, many of which exist nowhere else on Earth.",
+"When these forests disappear, entire ecosystems can collapse.",
+"Despite these troubling trends, there are reasons for hope.",
+"Conservation groups are working to protect remaining habitats and restore damaged ecosystems.",
+"Some governments have created large nature reserves where hunting and logging are strictly limited.",
+"Scientists are also using new technology, such as camera traps and satellite images, to monitor wildlife populations more accurately than ever before.",
+"Experts agree that protecting biodiversity requires cooperation across borders and industries.",
+"Individual choices, such as reducing waste and supporting sustainable products, can also make a difference.",
+"The path forward will not be easy, but many scientists believe it is still possible to slow, and even reverse, the loss of wildlife if action is taken soon."
+];
+
+const articleDiv = document.getElementById('article');
+const p1 = document.createElement('p');
+const p2 = document.createElement('p');
+sentences.forEach((s,i)=>{
+  const span = document.createElement('span');
+  span.className = 'sent';
+  span.id = 'sent'+i;
+  span.innerHTML = s + ' <button class="spk" data-i="'+i+'">🔊</button>';
+  (i < 7 ? p1 : p2).appendChild(span);
+  (i < 7 ? p1 : p2).appendChild(document.createTextNode(' '));
+});
+articleDiv.appendChild(p1);
+articleDiv.appendChild(p2);
+
+/* ---------- TTS ---------- */
+let englishVoice = null;
+let voicesReady = false;
+function loadVoices(){
+  const voices = window.speechSynthesis.getVoices();
+  if(voices && voices.length){
+    englishVoice = voices.find(v=>v.lang==='en-US') || voices.find(v=>v.lang && v.lang.startsWith('en')) || voices[0];
+    voicesReady = true;
+  }
+}
+if('speechSynthesis' in window){
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+} else {
+  document.querySelectorAll('.toolbar').forEach(t=>{
+    const warn = document.createElement('div');
+    warn.style.cssText='color:var(--wrong);font-weight:bold;';
+    warn.textContent = '⚠ This browser does not support text-to-speech. Try Chrome or Edge.';
+    t.appendChild(warn);
+  });
+}
+function clearHighlight(){document.querySelectorAll('.sent').forEach(s=>s.classList.remove('speaking'));}
+function makeUtterance(text, rate){
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang='en-US'; u.rate=rate||0.92;
+  if(englishVoice) u.voice = englishVoice;
+  return u;
+}
+function speakSentence(i){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  clearHighlight();
+  const u = makeUtterance(sentences[i]);
+  const el = document.getElementById('sent'+i);
+  u.onstart = ()=>{ el && el.classList.add('speaking'); };
+  u.onend = ()=>{ el && el.classList.remove('speaking'); };
+  u.onerror = ()=>{ el && el.classList.remove('speaking'); };
+  window.speechSynthesis.speak(u);
+}
+function speakAll(onDone){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  clearHighlight();
+  let i=0;
+  function next(){
+    if(i>=sentences.length){ clearHighlight(); if(onDone) onDone(); return; }
+    const u = makeUtterance(sentences[i]);
+    const el = document.getElementById('sent'+i);
+    clearHighlight();
+    u.onstart = ()=>{ el && el.classList.add('speaking'); el && el.scrollIntoView({behavior:'smooth',block:'center'}); };
+    u.onend = ()=>{ i++; next(); };
+    u.onerror = ()=>{ i++; next(); };
+    window.speechSynthesis.speak(u);
+  }
+  next();
+}
+function speakWord(word){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = makeUtterance(word, 0.85);
+  window.speechSynthesis.speak(u);
+}
+document.addEventListener('click', e=>{
+  if(e.target.matches('.spk')){
+    if(e.target.dataset.word){ speakWord(e.target.dataset.word); }
+    else { speakSentence(parseInt(e.target.dataset.i)); }
+  }
+});
+document.getElementById('play-full').onclick = ()=>speakAll();
+document.getElementById('stop-full').onclick = ()=>{window.speechSynthesis.cancel(); clearHighlight();};
+document.getElementById('play-listen').onclick = ()=>speakAll();
+document.getElementById('stop-listen').onclick = ()=>{window.speechSynthesis.cancel(); clearHighlight();};
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.onclick = ()=>{
+    window.speechSynthesis.cancel(); clearHighlight();
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  };
+});
+
+/* ---------- vocabulary ---------- */
+const vocab = [
+  {w:"biodiversity", zh:"生物多樣性", pos:"n.", def:"the variety of living things in an area", ex:"Rainforests have very high biodiversity."},
+  {w:"decline", zh:"衰退、減少", pos:"n./v.", def:"to become smaller or weaker over time", ex:"Wildlife populations have shown a sharp decline."},
+  {w:"pollution", zh:"污染", pos:"n.", def:"harmful substances released into the environment", ex:"Pollution harms both animals and humans."},
+  {w:"ecosystem", zh:"生態系統", pos:"n.", def:"a community of living things and their environment", ex:"Coral reefs are a fragile ecosystem."},
+  {w:"tropical", zh:"熱帶的", pos:"adj.", def:"relating to the hot regions near the equator", ex:"Tropical rainforests hold the most species on Earth."},
+  {w:"conservation", zh:"（自然）保育", pos:"n.", def:"the protection of nature and wildlife", ex:"Conservation efforts help save endangered species."},
+  {w:"reserve", zh:"保護區", pos:"n.", def:"a protected area of land for wildlife", ex:"The nature reserve is home to many rare animals."},
+  {w:"sustainable", zh:"永續的", pos:"adj.", def:"able to continue without seriously harming the environment", ex:"We should choose more sustainable products."},
+  {w:"monitor", zh:"監測", pos:"v.", def:"to watch and check something over time", ex:"Scientists monitor animal populations using cameras."},
+  {w:"species", zh:"物種", pos:"n.", def:"a group of similar living things that can reproduce together", ex:"This species is found only in Brazil."}
+];
+const vg = document.getElementById('vocab-grid');
+vocab.forEach(v=>{
+  const c = document.createElement('div');
+  c.className='vocab-card';
+  c.innerHTML = `<span class="w">${v.w}</span><span class="pos">${v.pos}</span>
+    <button class="spk" data-word="${v.w}" style="opacity:.85;">🔊</button>
+    <div class="zh" style="font-family:'Microsoft JhengHei', sans-serif; color:var(--brown); font-size:.85rem; margin:4px 0;">${v.zh}</div>
+    <div class="def">${v.def}</div>
+    <div class="ex">"${v.ex}"</div>`;
+  vg.appendChild(c);
+});
+
+/* ---------- cloze ---------- */
+const clozeAnswers = ["biodiversity","species","decline","Pollution","Tropical","ecosystems","Conservation","reserves","monitor","sustainable"];
+const clozeHTML = `
+Scientists who study global <input data-a="0"> report that many <input data-a="1"> of mammals, birds, fish, and reptiles have declined sharply over the past fifty years. Several factors are driving this <input data-a="2">. <input data-a="3"> , hunting, and the effects of a changing climate add even more pressure on already struggling species.<br><br>
+<input data-a="4"> regions, especially in South America and parts of Asia, have experienced some of the steepest declines. When these forests disappear, entire <input data-a="5"> can collapse.<br><br>
+<input data-a="6"> groups are working to protect remaining habitats. Some governments have created large nature <input data-a="7"> where hunting and logging are strictly limited. Scientists also use new technology to <input data-a="8"> wildlife populations. Individual choices, such as supporting <input data-a="9"> products, can also make a difference.
+`;
+document.getElementById('cloze-text').innerHTML = clozeHTML;
+document.getElementById('check-cloze').onclick = ()=>{
+  const inputs = document.querySelectorAll('#cloze-text input');
+  let correct=0;
+  inputs.forEach(inp=>{
+    const ans = clozeAnswers[parseInt(inp.dataset.a)];
+    const val = inp.value.trim();
+    if(val.toLowerCase()===ans.toLowerCase()){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  document.getElementById('cloze-result').textContent = `${correct} / ${inputs.length} correct`;
+};
+
+/* ---------- listening questions ---------- */
+const listeningQs = [
+  {q:"What is the main topic of this article?", opts:["How rainforests grow","The global decline of wildlife populations","How to build nature reserves","The history of biodiversity research"], correct:1},
+  {q:"According to the article, how much have wildlife populations dropped over the past fifty years?", opts:["By about 10%","By more than half","They have not changed","They have increased"], correct:1},
+  {q:"What is one major cause of habitat destruction mentioned in the article?", opts:["Too much rain","Clearing land for farming, cities, and roads","Ocean currents","Cold weather"], correct:1},
+  {q:"Which regions have experienced the steepest wildlife declines?", opts:["Northern Europe","The Arctic","Tropical regions like South America and parts of Asia","Australia only"], correct:2},
+  {q:"What technology do scientists use to monitor wildlife populations?", opts:["Telescopes only","Camera traps and satellite images","Underwater microphones","Weather balloons"], correct:1},
+  {q:"According to the article, what can individuals do to help?", opts:["Nothing, only governments can help","Reduce waste and support sustainable products","Stop using technology","Move to tropical regions"], correct:1}
+];
+function buildMC(container, list, namePrefix){
+  list.forEach((item,i)=>{
+    const card = document.createElement('div');
+    card.className='qcard';
+    let optsHTML = item.opts.map((o,j)=>
+      `<label><input type="radio" name="${namePrefix}${i}" value="${j}"> ${o}</label>`
+    ).join('');
+    card.innerHTML = `<p class="q">${i+1}. ${item.q}</p>${optsHTML}`;
+    container.appendChild(card);
+  });
+}
+buildMC(document.getElementById('listening-qs'), listeningQs, 'listen');
+document.getElementById('check-listening').onclick = ()=>{
+  listeningQs.forEach((item,i)=>{
+    document.getElementsByName('listen'+i).forEach(radio=>{
+      const label = radio.parentElement;
+      label.classList.remove('correct','wrong');
+      if(parseInt(radio.value)===item.correct && radio.checked) label.classList.add('correct');
+      else if(radio.checked) label.classList.add('wrong');
+      else if(parseInt(radio.value)===item.correct) label.classList.add('correct');
+    });
+  });
+};
+
+/* ---------- reading comprehension ---------- */
+const compQs = [
+  {q:"What is this article mainly about?", opts:["Wildlife populations are stable worldwide","Wildlife populations are declining, but conservation efforts offer hope","Only tropical animals are in danger","Technology has already solved the wildlife crisis"], correct:1},
+  {q:"According to the article, why do rainforests matter so much for biodiversity?", opts:["They are cold and dry","They are home to an enormous variety of species found nowhere else","They have very few animals","They are easy to farm"], correct:1},
+  {q:"Why do you think scientists use camera traps and satellite images instead of only counting animals by hand? (Think about it, then choose the best answer.)", opts:["Because counting animals directly is slow and covers less area, while technology can monitor larger regions more accurately","Because animals like being photographed","Because satellites are cheaper than paper","Because camera traps make animals disappear"], correct:0},
+  {q:"In the sentence \"many scientists believe it is still possible to slow, and even reverse, the loss of wildlife,\" what does the word 'reverse' most likely mean?", opts:["To drive backward","To turn a trend around and make it go the opposite direction","To repeat something exactly","To ignore a problem"], correct:1}
+];
+buildMC(document.getElementById('comp-qs'), compQs, 'comp');
+document.getElementById('check-comp').onclick = ()=>{
+  let correctCount=0;
+  compQs.forEach((item,i)=>{
+    document.getElementsByName('comp'+i).forEach(radio=>{
+      const label = radio.parentElement;
+      label.classList.remove('correct','wrong');
+      if(parseInt(radio.value)===item.correct){
+        label.classList.add('correct');
+        if(radio.checked) correctCount++;
+      } else if(radio.checked){
+        label.classList.add('wrong');
+      }
+    });
+  });
+  const box = document.getElementById('score-box');
+  box.style.display='block';
+  box.textContent = `Reading Comprehension Score: ${correctCount} / ${compQs.length}`;
+};
+</script>
+</body>
+</html>
