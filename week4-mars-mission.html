@@ -426,8 +426,10 @@ function makeUtterance(text, rate){
   if(englishVoice) u.voice = englishVoice;
   return u;
 }
+let userStopped = false;
 function speakSentence(i){
   if(!('speechSynthesis' in window)) return;
+  userStopped = false;
   window.speechSynthesis.cancel();
   clearHighlight();
   const u = makeUtterance(sentences[i]);
@@ -439,26 +441,34 @@ function speakSentence(i){
 }
 function speakAll(onDone){
   if(!('speechSynthesis' in window)) return;
+  userStopped = false;
   window.speechSynthesis.cancel();
   clearHighlight();
   let i=0;
   function next(){
+    if(userStopped){ return; }
     if(i>=sentences.length){ clearHighlight(); if(onDone) onDone(); return; }
     const u = makeUtterance(sentences[i]);
     const el = document.getElementById('sent'+i);
     clearHighlight();
     u.onstart = ()=>{ el && el.classList.add('speaking'); el && el.scrollIntoView({behavior:'smooth',block:'center'}); };
     u.onend = ()=>{ i++; next(); };
-    u.onerror = ()=>{ i++; next(); };
+    u.onerror = ()=>{ if(userStopped) return; i++; next(); };
     window.speechSynthesis.speak(u);
   }
   next();
 }
 function speakWord(word){
   if(!('speechSynthesis' in window)) return;
+  userStopped = false;
   window.speechSynthesis.cancel();
   const u = makeUtterance(word, 0.85);
   window.speechSynthesis.speak(u);
+}
+function stopSpeaking(){
+  userStopped = true;
+  window.speechSynthesis.cancel();
+  clearHighlight();
 }
 document.addEventListener('click', e=>{
   if(e.target.matches('.spk')){
@@ -467,9 +477,9 @@ document.addEventListener('click', e=>{
   }
 });
 document.getElementById('play-full').onclick = ()=>speakAll();
-document.getElementById('stop-full').onclick = ()=>{window.speechSynthesis.cancel(); clearHighlight();};
+document.getElementById('stop-full').onclick = stopSpeaking;
 document.getElementById('play-listen').onclick = ()=>speakAll();
-document.getElementById('stop-listen').onclick = ()=>{window.speechSynthesis.cancel(); clearHighlight();};
+document.getElementById('stop-listen').onclick = stopSpeaking;
 
 /* ---------- tabs ---------- */
 document.querySelectorAll('.tab-btn').forEach(btn=>{

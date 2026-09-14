@@ -392,41 +392,87 @@ articleDiv.appendChild(p1);
 articleDiv.appendChild(p2);
 
 /* ---------- TTS ---------- */
-let currentUtterances = [];
+let englishVoice = null;
+let voicesReady = false;
+function loadVoices(){
+  const voices = window.speechSynthesis.getVoices();
+  if(voices && voices.length){
+    englishVoice = voices.find(v=>v.lang==='en-US') || voices.find(v=>v.lang && v.lang.startsWith('en')) || voices[0];
+    voicesReady = true;
+  }
+}
+if('speechSynthesis' in window){
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+} else {
+  document.querySelectorAll('.toolbar').forEach(t=>{
+    const warn = document.createElement('div');
+    warn.style.cssText='color:var(--wrong);font-weight:bold;';
+    warn.textContent = '⚠ This browser does not support text-to-speech. Try Chrome or Edge.';
+    t.appendChild(warn);
+  });
+}
 function clearHighlight(){document.querySelectorAll('.sent').forEach(s=>s.classList.remove('speaking'));}
+function makeUtterance(text, rate){
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang='en-US'; u.rate=rate||0.92;
+  if(englishVoice) u.voice = englishVoice;
+  return u;
+}
+let userStopped = false;
 function speakSentence(i){
+  if(!('speechSynthesis' in window)) return;
+  userStopped = false;
   window.speechSynthesis.cancel();
   clearHighlight();
-  const u = new SpeechSynthesisUtterance(sentences[i]);
-  u.lang='en-US'; u.rate=0.92;
+  const u = makeUtterance(sentences[i]);
   const el = document.getElementById('sent'+i);
   u.onstart = ()=>{ el && el.classList.add('speaking'); };
   u.onend = ()=>{ el && el.classList.remove('speaking'); };
+  u.onerror = ()=>{ el && el.classList.remove('speaking'); };
   window.speechSynthesis.speak(u);
 }
 function speakAll(onDone){
+  if(!('speechSynthesis' in window)) return;
+  userStopped = false;
   window.speechSynthesis.cancel();
   clearHighlight();
   let i=0;
   function next(){
+    if(userStopped){ return; }
     if(i>=sentences.length){ clearHighlight(); if(onDone) onDone(); return; }
-    const u = new SpeechSynthesisUtterance(sentences[i]);
-    u.lang='en-US'; u.rate=0.92;
+    const u = makeUtterance(sentences[i]);
     const el = document.getElementById('sent'+i);
     clearHighlight();
     u.onstart = ()=>{ el && el.classList.add('speaking'); el && el.scrollIntoView({behavior:'smooth',block:'center'}); };
     u.onend = ()=>{ i++; next(); };
+    u.onerror = ()=>{ if(userStopped) return; i++; next(); };
     window.speechSynthesis.speak(u);
   }
   next();
 }
+function speakWord(word){
+  if(!('speechSynthesis' in window)) return;
+  userStopped = false;
+  window.speechSynthesis.cancel();
+  const u = makeUtterance(word, 0.85);
+  window.speechSynthesis.speak(u);
+}
+function stopSpeaking(){
+  userStopped = true;
+  window.speechSynthesis.cancel();
+  clearHighlight();
+}
 document.addEventListener('click', e=>{
-  if(e.target.matches('.spk')){ speakSentence(parseInt(e.target.dataset.i)); }
+  if(e.target.matches('.spk')){
+    if(e.target.dataset.word){ speakWord(e.target.dataset.word); }
+    else { speakSentence(parseInt(e.target.dataset.i)); }
+  }
 });
 document.getElementById('play-full').onclick = ()=>speakAll();
-document.getElementById('stop-full').onclick = ()=>{window.speechSynthesis.cancel(); clearHighlight();};
+document.getElementById('stop-full').onclick = stopSpeaking;
 document.getElementById('play-listen').onclick = ()=>speakAll();
-document.getElementById('stop-listen').onclick = ()=>{window.speechSynthesis.cancel(); clearHighlight();};
+document.getElementById('stop-listen').onclick = stopSpeaking;
 
 /* ---------- tabs ---------- */
 document.querySelectorAll('.tab-btn').forEach(btn=>{
@@ -441,22 +487,24 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
 
 /* ---------- vocabulary ---------- */
 const vocab = [
-  {w:"carnivore", pos:"n.", def:"an animal that eats meat", ex:"Lions and polar bears are both carnivores."},
-  {w:"habitat", pos:"n.", def:"the natural home of an animal or plant", ex:"The Arctic is the polar bear's habitat."},
-  {w:"vulnerable", pos:"adj.", def:"at risk of harm or extinction", ex:"Vulnerable species need extra protection."},
-  {w:"adapt", pos:"v.", def:"to change in order to survive new conditions", ex:"Animals must adapt when their environment changes."},
-  {w:"conservationist", pos:"n.", def:"a person who works to protect nature", ex:"A conservationist studies how to save endangered animals."},
-  {w:"emission", pos:"n.", def:"a gas or substance released into the air", ex:"Cars produce emissions that affect the climate."},
-  {w:"population", pos:"n.", def:"the total number of one species in an area", ex:"The polar bear population is shrinking in some regions."},
-  {w:"migration", pos:"n.", def:"seasonal movement of animals from place to place", ex:"Birds are famous for their long migration each year."},
-  {w:"satellite", pos:"n.", def:"a device in space that sends and collects data", ex:"Scientists use satellite collars to track animals."},
-  {w:"track", pos:"v.", def:"to follow and monitor the movement of something", ex:"Researchers track bears to learn about their habits."}
+  {w:"carnivore", zh:"肉食性動物", pos:"n.", def:"an animal that eats meat", ex:"Lions and polar bears are both carnivores."},
+  {w:"habitat", zh:"棲息地", pos:"n.", def:"the natural home of an animal or plant", ex:"The Arctic is the polar bear's habitat."},
+  {w:"vulnerable", zh:"易受傷害的、瀕危的", pos:"adj.", def:"at risk of harm or extinction", ex:"Vulnerable species need extra protection."},
+  {w:"adapt", zh:"適應", pos:"v.", def:"to change in order to survive new conditions", ex:"Animals must adapt when their environment changes."},
+  {w:"conservationist", zh:"自然保育人士", pos:"n.", def:"a person who works to protect nature", ex:"A conservationist studies how to save endangered animals."},
+  {w:"emission", zh:"排放（物）", pos:"n.", def:"a gas or substance released into the air", ex:"Cars produce emissions that affect the climate."},
+  {w:"population", zh:"（動物）族群、數量", pos:"n.", def:"the total number of one species in an area", ex:"The polar bear population is shrinking in some regions."},
+  {w:"migration", zh:"遷徙", pos:"n.", def:"seasonal movement of animals from place to place", ex:"Birds are famous for their long migration each year."},
+  {w:"satellite", zh:"衛星", pos:"n.", def:"a device in space that sends and collects data", ex:"Scientists use satellite collars to track animals."},
+  {w:"track", zh:"追蹤", pos:"v.", def:"to follow and monitor the movement of something", ex:"Researchers track bears to learn about their habits."}
 ];
 const vg = document.getElementById('vocab-grid');
 vocab.forEach(v=>{
   const c = document.createElement('div');
   c.className='vocab-card';
   c.innerHTML = `<span class="w">${v.w}</span><span class="pos">${v.pos}</span>
+    <button class="spk" data-word="${v.w}" style="opacity:.85;">🔊</button>
+    <div class="zh" style="font-family:'Microsoft JhengHei', sans-serif; color:var(--brown); font-size:.85rem; margin:4px 0;">${v.zh}</div>
     <div class="def">${v.def}</div>
     <div class="ex">"${v.ex}"</div>`;
   vg.appendChild(c);
