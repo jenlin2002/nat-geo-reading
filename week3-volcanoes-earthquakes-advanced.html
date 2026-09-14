@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 3 (Advanced) · Restless Earth: Volcanoes and Earthquakes</title>
+<style>
+  :root{
+    --ink:#1a1a1a;
+    --parchment:#faf6ec;
+    --parchment-dark:#f0e9d8;
+    --natgeo-yellow:#ffcc00;
+    --teal:#1b4b43;
+    --teal-light:#2e6e63;
+    --brown:#6b4226;
+    --rule:#d8cdb0;
+    --correct:#1b4b43;
+    --wrong:#a33b2b;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--ink);
+    font-family:Georgia, 'Times New Roman', serif;
+    color:var(--ink);
+  }
+  .frame{
+    border:14px solid var(--natgeo-yellow);
+    min-height:100vh;
+    background:var(--parchment);
+  }
+  header{
+    padding:36px 6vw 24px;
+    border-bottom:3px solid var(--ink);
+    background:var(--ink);
+    color:var(--parchment);
+  }
+  .eyebrow{
+    font-family:'Courier New', monospace;
+    letter-spacing:.25em;
+    font-size:.75rem;
+    color:var(--natgeo-yellow);
+    text-transform:uppercase;
+    margin:0 0 10px;
+  }
+  h1{
+    font-size:clamp(1.6rem,4vw,2.6rem);
+    margin:0 0 8px;
+    line-height:1.15;
+  }
+  .subtitle{
+    font-family:Verdana, sans-serif;
+    font-size:.95rem;
+    color:#cfc9b8;
+    margin:0;
+  }
+  nav.tabs{
+    display:flex;
+    flex-wrap:wrap;
+    gap:2px;
+    background:var(--ink);
+    padding:0 6vw;
+  }
+  nav.tabs button{
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+    letter-spacing:.03em;
+    border:none;
+    padding:14px 18px;
+    background:#2a2a2a;
+    color:#cfc9b8;
+    cursor:pointer;
+    border-top:3px solid transparent;
+  }
+  nav.tabs button.active{
+    background:var(--parchment);
+    color:var(--ink);
+    border-top:3px solid var(--natgeo-yellow);
+    font-weight:bold;
+  }
+  main{
+    padding:36px 6vw 80px;
+    max-width:820px;
+    margin:0 auto;
+  }
+  section.panel{display:none;}
+  section.panel.active{display:block;}
+
+  figure{margin:0 0 24px;}
+  figure img{
+    width:100%;
+    display:block;
+    border:1px solid var(--rule);
+  }
+  figcaption{
+    font-family:Verdana, sans-serif;
+    font-size:.75rem;
+    color:#7a7259;
+    margin-top:6px;
+  }
+
+  .video-wrap{
+    position:relative;
+    padding-top:56.25%;
+    margin:0 0 28px;
+    border:1px solid var(--rule);
+  }
+  .video-wrap iframe{
+    position:absolute;top:0;left:0;width:100%;height:100%;border:0;
+  }
+
+  .toolbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-bottom:20px;
+    padding:12px 16px;
+    background:var(--parchment-dark);
+    border-left:4px solid var(--teal);
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+  }
+  button.audio-btn, button.action-btn{
+    font-family:Verdana, sans-serif;
+    cursor:pointer;
+    border:none;
+    border-radius:3px;
+  }
+  button.action-btn{
+    background:var(--teal);
+    color:#fff;
+    padding:10px 18px;
+    font-size:.85rem;
+  }
+  button.action-btn:hover{background:var(--teal-light);}
+  button.action-btn:disabled{background:#999;cursor:default;}
+
+  .article p{
+    font-size:1.05rem;
+    line-height:1.85;
+    margin:0 0 20px;
+  }
+  .sent{
+    position:relative;
+  }
+  button.spk{
+    background:none;
+    border:none;
+    cursor:pointer;
+    color:var(--teal);
+    font-size:.85em;
+    vertical-align:middle;
+    padding:0 3px;
+    opacity:.55;
+  }
+  button.spk:hover{opacity:1;}
+  .sent.speaking{background:#ffe9a3;}
+
+  h2.section-title{
+    font-size:1.3rem;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:8px;
+    margin:0 0 20px;
+  }
+
+  .vocab-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:14px;
+    margin-bottom:32px;
+  }
+  .vocab-card{
+    background:#fff;
+    border:1px solid var(--rule);
+    border-left:4px solid var(--natgeo-yellow);
+    padding:14px 16px;
+    font-family:Verdana, sans-serif;
+  }
+  .vocab-card .w{
+    font-family:Georgia, serif;
+    font-weight:bold;
+    font-size:1.05rem;
+    color:var(--teal);
+  }
+  .vocab-card .pos{
+    font-style:italic;
+    font-size:.8rem;
+    color:#7a7259;
+    margin-left:6px;
+  }
+  .vocab-card .def{font-size:.88rem;margin:6px 0 4px;}
+  .vocab-card .ex{font-size:.82rem;color:#555;}
+
+  .cloze-box{
+    background:#fff;
+    border:1px solid var(--rule);
+    padding:20px;
+    font-size:1rem;
+    line-height:2.1;
+    font-family:Georgia, serif;
+    margin-bottom:16px;
+  }
+  .cloze-box input{
+    width:120px;
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+    padding:3px 6px;
+    border:none;
+    border-bottom:2px solid var(--teal);
+    background:var(--parchment-dark);
+    text-align:center;
+  }
+  .cloze-box input.correct{border-bottom-color:var(--correct);background:#e3efe9;}
+  .cloze-box input.wrong{border-bottom-color:var(--wrong);background:#f7e5e1;}
+  .wordbank{
+    font-family:Verdana, sans-serif;
+    font-size:.82rem;
+    color:#555;
+    margin-bottom:20px;
+    padding:10px 14px;
+    background:var(--parchment-dark);
+  }
+
+  .qcard{
+    background:#fff;
+    border:1px solid var(--rule);
+    padding:16px 18px;
+    margin-bottom:14px;
+    font-family:Verdana, sans-serif;
+  }
+  .qcard p.q{font-size:.95rem;font-weight:bold;margin:0 0 10px;}
+  .qcard label{
+    display:block;
+    font-size:.88rem;
+    padding:6px 8px;
+    margin-bottom:4px;
+    border:1px solid transparent;
+    border-radius:3px;
+    cursor:pointer;
+  }
+  .qcard label:hover{background:var(--parchment-dark);}
+  .qcard label.correct{background:#e3efe9;border-color:var(--correct);}
+  .qcard label.wrong{background:#f7e5e1;border-color:var(--wrong);}
+  textarea.short-answer{
+    width:100%;
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+    padding:8px;
+    border:1px solid var(--rule);
+    min-height:60px;
+  }
+
+  #score-box{
+    margin-top:20px;
+    padding:14px 18px;
+    background:var(--ink);
+    color:var(--natgeo-yellow);
+    font-family:Verdana, sans-serif;
+    font-size:.9rem;
+    display:none;
+  }
+  footer{
+    text-align:center;
+    font-family:Verdana, sans-serif;
+    font-size:.75rem;
+    color:#7a7259;
+    padding:20px 6vw 40px;
+  }
+</style>
+</head>
+<body>
+<div class="frame">
+
+  <header>
+    <p class="eyebrow">Nat-Geo Reading &middot; Week 3 of 5 (進階版) &middot; Natural Phenomena</p>
+    <h1>Restless Earth: The Science Behind Volcanoes and Earthquakes</h1>
+    <p class="subtitle">Reading level: US Grade 6–8 &nbsp;|&nbsp; ~300 words</p>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="reading">📖 Reading</button>
+    <button class="tab-btn" data-tab="vocab">🔤 Vocabulary</button>
+    <button class="tab-btn" data-tab="cloze">✏️ Cloze Test</button>
+    <button class="tab-btn" data-tab="listening">🎧 Listening</button>
+    <button class="tab-btn" data-tab="comprehension">🧠 Comprehension</button>
+  </nav>
+
+  <main>
+
+    <!-- ================= READING ================= -->
+    <section class="panel active" id="reading">
+      <div class="video-wrap">
+        <iframe src="https://www.youtube.com/embed/au9yLUv8o04" title="USGS: Kīlauea Volcano — Lava Scenes From Fissure 8" allowfullscreen></iframe>
+      </div>
+
+      <figure>
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/K%C4%ABlauea%20volcano%20eruption%2020201220.jpg" alt="Kilauea volcano erupting with glowing lava">
+        <figcaption>Kilauea volcano in Hawaii erupts, sending glowing lava into the sky. Photo: US National Park Service / Wikimedia Commons.</figcaption>
+      </figure>
+
+      <div class="toolbar">
+        <button class="action-btn" id="play-full">▶ Read Full Article Aloud</button>
+        <button class="action-btn" id="stop-full" style="background:var(--brown);">■ Stop</button>
+        <span>or click 🔊 next to any sentence to hear just that line</span>
+      </div>
+
+      <div class="article" id="article"></div>
+
+      <figure>
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Icelandic%20volcano%20eruption.jpg" alt="An erupting volcano in Iceland with flowing lava">
+        <figcaption>Lava flows from a volcano in Iceland. Photo: Wikimedia Commons.</figcaption>
+      </figure>
+    </section>
+
+    <!-- ================= VOCAB ================= -->
+    <section class="panel" id="vocab">
+      <h2 class="section-title">Key Vocabulary</h2>
+      <div class="vocab-grid" id="vocab-grid"></div>
+    </section>
+
+    <!-- ================= CLOZE ================= -->
+    <section class="panel" id="cloze">
+      <h2 class="section-title">Cloze Test</h2>
+      <p style="font-family:Verdana, sans-serif;font-size:.85rem;">Fill in each blank with the correct word from the word bank. Then click "Check Answers."</p>
+      <div class="wordbank">
+        <strong>Word bank:</strong> tectonic &middot; mantle &middot; seismic &middot; seismographs &middot; magnitude &middot; magma &middot; volcanologists &middot; deformation &middot; evacuate &middot; fertile
+      </div>
+      <div class="cloze-box" id="cloze-text"></div>
+      <button class="action-btn" id="check-cloze">Check Answers</button>
+      <span id="cloze-result" style="font-family:Verdana, sans-serif;font-size:.85rem;margin-left:12px;"></span>
+    </section>
+
+    <!-- ================= LISTENING ================= -->
+    <section class="panel" id="listening">
+      <h2 class="section-title">Listening Comprehension</h2>
+      <div class="toolbar">
+        <button class="action-btn" id="play-listen">▶ Play Article Audio</button>
+        <button class="action-btn" id="stop-listen" style="background:var(--brown);">■ Stop</button>
+        <span>Close your eyes and listen — then answer below.</span>
+      </div>
+      <div id="listening-qs"></div>
+      <button class="action-btn" id="check-listening">Check Listening Answers</button>
+    </section>
+
+    <!-- ================= COMPREHENSION ================= -->
+    <section class="panel" id="comprehension">
+      <h2 class="section-title">Reading Comprehension</h2>
+      <div id="comp-qs"></div>
+      <button class="action-btn" id="check-comp">Check Comprehension Answers</button>
+      <div id="score-box"></div>
+    </section>
+
+  </main>
+
+  <footer>National Geographic–style Reading Series &middot; Week 3: Natural Phenomena (Advanced US Grade 6–8) &middot; Built for home English study</footer>
+</div>
+
+<script>
+/* ---------- article sentences ---------- */
+const sentences = [
+"Beneath our feet, the Earth's outer layer is broken into massive slabs of rock called tectonic plates, which drift atop a semi-fluid layer of the mantle at a pace of only a few centimeters per year.",
+"Though imperceptibly slow, this constant motion generates tremendous stress along plate boundaries, and when that stress is finally released, the result can be a violent earthquake or a volcanic eruption.",
+"Earthquakes occur when built-up pressure along a fault line suddenly releases, sending seismic waves rippling through the crust.",
+"Seismologists measure this energy using instruments called seismographs, which record the intensity and duration of ground motion.",
+"The strength of an earthquake is typically reported using the moment magnitude scale, where each whole-number increase represents roughly thirty-two times more energy released.",
+"Volcanoes, meanwhile, form where molten rock, known as magma, forces its way toward the surface through weaknesses in the crust.",
+"As magma rises, dissolved gases expand rapidly, and if the surrounding rock cannot contain the pressure, the volcano erupts, expelling lava, ash, and volcanic gases with explosive force.",
+"Not all eruptions are alike; some ooze slow-moving lava, while others produce catastrophic explosions capable of altering climate patterns for years.",
+"Volcanologists monitor active volcanoes using a combination of seismic sensors, gas analyzers, and satellite imagery to detect subtle warning signs, such as increased seismic activity or ground deformation, that often precede an eruption.",
+"Early detection has saved countless lives by allowing authorities to evacuate at-risk communities in time.",
+"Despite their destructive potential, volcanoes and earthquakes play essential roles in shaping our planet.",
+"Volcanic eruptions enrich surrounding soil with minerals, support fertile farmland, and even create new landmass over time.",
+"Understanding these geological forces not only helps scientists predict natural hazards but also deepens our appreciation for the dynamic, ever-changing nature of the Earth beneath us."
+];
+
+const articleDiv = document.getElementById('article');
+const p1 = document.createElement('p');
+const p2 = document.createElement('p');
+sentences.forEach((s,i)=>{
+  const span = document.createElement('span');
+  span.className = 'sent';
+  span.id = 'sent'+i;
+  span.innerHTML = s + ' <button class="spk" data-i="'+i+'">🔊</button>';
+  (i < 7 ? p1 : p2).appendChild(span);
+  (i < 7 ? p1 : p2).appendChild(document.createTextNode(' '));
+});
+articleDiv.appendChild(p1);
+articleDiv.appendChild(p2);
+
+/* ---------- TTS ---------- */
+let englishVoice = null;
+let voicesReady = false;
+function loadVoices(){
+  const voices = window.speechSynthesis.getVoices();
+  if(voices && voices.length){
+    englishVoice = voices.find(v=>v.lang==='en-US') || voices.find(v=>v.lang && v.lang.startsWith('en')) || voices[0];
+    voicesReady = true;
+  }
+}
+if('speechSynthesis' in window){
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+} else {
+  document.querySelectorAll('.toolbar').forEach(t=>{
+    const warn = document.createElement('div');
+    warn.style.cssText='color:var(--wrong);font-weight:bold;';
+    warn.textContent = '⚠ This browser does not support text-to-speech. Try Chrome or Edge.';
+    t.appendChild(warn);
+  });
+}
+function clearHighlight(){document.querySelectorAll('.sent').forEach(s=>s.classList.remove('speaking'));}
+function makeUtterance(text, rate){
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang='en-US'; u.rate=rate||0.92;
+  if(englishVoice) u.voice = englishVoice;
+  return u;
+}
+function speakSentence(i){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  clearHighlight();
+  const u = makeUtterance(sentences[i]);
+  const el = document.getElementById('sent'+i);
+  u.onstart = ()=>{ el && el.classList.add('speaking'); };
+  u.onend = ()=>{ el && el.classList.remove('speaking'); };
+  u.onerror = ()=>{ el && el.classList.remove('speaking'); };
+  window.speechSynthesis.speak(u);
+}
+function speakAll(onDone){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  clearHighlight();
+  let i=0;
+  function next(){
+    if(i>=sentences.length){ clearHighlight(); if(onDone) onDone(); return; }
+    const u = makeUtterance(sentences[i]);
+    const el = document.getElementById('sent'+i);
+    clearHighlight();
+    u.onstart = ()=>{ el && el.classList.add('speaking'); el && el.scrollIntoView({behavior:'smooth',block:'center'}); };
+    u.onend = ()=>{ i++; next(); };
+    u.onerror = ()=>{ i++; next(); };
+    window.speechSynthesis.speak(u);
+  }
+  next();
+}
+function speakWord(word){
+  if(!('speechSynthesis' in window)) return;
+  window.speechSynthesis.cancel();
+  const u = makeUtterance(word, 0.85);
+  window.speechSynthesis.speak(u);
+}
+document.addEventListener('click', e=>{
+  if(e.target.matches('.spk')){
+    if(e.target.dataset.word){ speakWord(e.target.dataset.word); }
+    else { speakSentence(parseInt(e.target.dataset.i)); }
+  }
+});
+document.getElementById('play-full').onclick = ()=>speakAll();
+document.getElementById('stop-full').onclick = ()=>{window.speechSynthesis.cancel(); clearHighlight();};
+document.getElementById('play-listen').onclick = ()=>speakAll();
+document.getElementById('stop-listen').onclick = ()=>{window.speechSynthesis.cancel(); clearHighlight();};
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.onclick = ()=>{
+    window.speechSynthesis.cancel(); clearHighlight();
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  };
+});
+
+/* ---------- vocabulary ---------- */
+const vocab = [
+  {w:"tectonic", zh:"板塊構造的", pos:"adj.", def:"relating to the movement of Earth's plates", ex:"Tectonic plates drift very slowly."},
+  {w:"mantle", zh:"地函（地幔）", pos:"n.", def:"the semi-fluid layer beneath Earth's crust", ex:"Plates float on top of the mantle."},
+  {w:"seismic", zh:"地震的", pos:"adj.", def:"related to earthquakes or ground vibrations", ex:"Seismic waves travel through the Earth's crust."},
+  {w:"seismograph", zh:"地震儀", pos:"n.", def:"an instrument that measures earthquake activity", ex:"Seismographs record the intensity of ground motion."},
+  {w:"magnitude", zh:"震級、規模", pos:"n.", def:"the size or strength of an earthquake", ex:"Each earthquake is given a magnitude number."},
+  {w:"magma", zh:"岩漿", pos:"n.", def:"hot melted rock under the ground", ex:"Magma forces its way toward the surface."},
+  {w:"volcanologist", zh:"火山學家", pos:"n.", def:"a scientist who studies volcanoes", ex:"Volcanologists monitor active volcanoes closely."},
+  {w:"deformation", zh:"（地表）變形", pos:"n.", def:"a change in the shape of the ground's surface", ex:"Ground deformation can warn of a coming eruption."},
+  {w:"evacuate", zh:"撤離", pos:"v.", def:"to move people away from a dangerous area", ex:"Authorities evacuate nearby communities before an eruption."},
+  {w:"fertile", zh:"肥沃的", pos:"adj.", def:"able to produce large amounts of crops", ex:"Volcanic ash creates fertile farmland."}
+];
+const vg = document.getElementById('vocab-grid');
+vocab.forEach(v=>{
+  const c = document.createElement('div');
+  c.className='vocab-card';
+  c.innerHTML = `<span class="w">${v.w}</span><span class="pos">${v.pos}</span>
+    <button class="spk" data-word="${v.w}" style="opacity:.85;">🔊</button>
+    <div class="zh" style="font-family:'Microsoft JhengHei', sans-serif; color:var(--brown); font-size:.85rem; margin:4px 0;">${v.zh}</div>
+    <div class="def">${v.def}</div>
+    <div class="ex">"${v.ex}"</div>`;
+  vg.appendChild(c);
+});
+
+/* ---------- cloze ---------- */
+const clozeAnswers = ["tectonic","mantle","seismic","seismographs","magnitude","magma","volcanologists","deformation","evacuate","fertile"];
+const clozeHTML = `
+The Earth's outer layer is broken into massive slabs of rock called <input data-a="0"> plates, which drift atop the <input data-a="1"> .<br><br>
+Earthquakes send <input data-a="2"> waves through the crust. Scientists measure this energy using instruments called <input data-a="3"> , and report the strength using a <input data-a="4"> scale.<br><br>
+Volcanoes form where molten rock, known as <input data-a="5"> , forces its way toward the surface. <input data-a="6"> monitor active volcanoes for warning signs such as ground <input data-a="7"> , allowing authorities to <input data-a="8"> nearby communities in time.<br><br>
+Volcanic eruptions enrich soil, creating <input data-a="9"> farmland.
+`;
+document.getElementById('cloze-text').innerHTML = clozeHTML;
+document.getElementById('check-cloze').onclick = ()=>{
+  const inputs = document.querySelectorAll('#cloze-text input');
+  let correct=0;
+  inputs.forEach(inp=>{
+    const ans = clozeAnswers[parseInt(inp.dataset.a)];
+    const val = inp.value.trim();
+    if(val.toLowerCase()===ans.toLowerCase()){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  document.getElementById('cloze-result').textContent = `${correct} / ${inputs.length} correct`;
+};
+
+/* ---------- listening questions ---------- */
+const listeningQs = [
+  {q:"What are tectonic plates?", opts:["Small rocks on the beach","Massive slabs of rock that make up Earth's outer layer","Types of volcanoes","Ocean currents"], correct:1},
+  {q:"What do seismographs measure?", opts:["Ocean temperature","The intensity and duration of ground motion during earthquakes","Volcanic gas color","Wind speed"], correct:1},
+  {q:"What happens as magma rises toward the surface?", opts:["It cools down completely","Dissolved gases expand rapidly, building pressure","It turns into water","It disappears"], correct:1},
+  {q:"What tools do volcanologists use to monitor volcanoes?", opts:["Only their eyes","Seismic sensors, gas analyzers, and satellite imagery","Telescopes only","Weather balloons only"], correct:1},
+  {q:"Why is early detection of volcanic warning signs important?", opts:["It has no real benefit","It allows authorities to evacuate at-risk communities in time","It only helps scientists write reports","It stops eruptions from happening"], correct:1},
+  {q:"How do volcanic eruptions benefit the environment over time?", opts:["They destroy all nearby life permanently","They enrich soil with minerals and support fertile farmland","They make the air unbreathable forever","They have no benefits at all"], correct:1}
+];
+function buildMC(container, list, namePrefix){
+  list.forEach((item,i)=>{
+    const card = document.createElement('div');
+    card.className='qcard';
+    let optsHTML = item.opts.map((o,j)=>
+      `<label><input type="radio" name="${namePrefix}${i}" value="${j}"> ${o}</label>`
+    ).join('');
+    card.innerHTML = `<p class="q">${i+1}. ${item.q}</p>${optsHTML}`;
+    container.appendChild(card);
+  });
+}
+buildMC(document.getElementById('listening-qs'), listeningQs, 'listen');
+document.getElementById('check-listening').onclick = ()=>{
+  listeningQs.forEach((item,i)=>{
+    document.getElementsByName('listen'+i).forEach(radio=>{
+      const label = radio.parentElement;
+      label.classList.remove('correct','wrong');
+      if(parseInt(radio.value)===item.correct && radio.checked) label.classList.add('correct');
+      else if(radio.checked) label.classList.add('wrong');
+      else if(parseInt(radio.value)===item.correct) label.classList.add('correct');
+    });
+  });
+};
+
+/* ---------- reading comprehension ---------- */
+const compQs = [
+  {q:"What is the main idea of this article?", opts:["Volcanoes and earthquakes are entirely unpredictable and always harmful","Volcanoes and earthquakes result from powerful geological forces that are both destructive and beneficial","Only volcanoes are studied by scientists","Earthquakes have no connection to Earth's plates"], correct:1},
+  {q:"According to the article, what does the moment magnitude scale measure?", opts:["The color of lava","The strength of an earthquake","The temperature of magma","The speed of tectonic plates"], correct:1},
+  {q:"Why do you think volcanologists pay close attention to ground deformation? (Think about it, then choose the best answer.)", opts:["Because changes in the ground's shape can signal that magma is moving and an eruption may be approaching","Because ground deformation is unrelated to volcanic activity","Because it helps them measure rainfall","Because it indicates an earthquake has already ended"], correct:0},
+  {q:"In the sentence \"Volcanic eruptions enrich surrounding soil with minerals, support fertile farmland, and even create new landmass over time,\" what does 'enrich' most likely mean?", opts:["To make something poorer","To improve or add value to something","To destroy completely","To cool down"], correct:1}
+];
+buildMC(document.getElementById('comp-qs'), compQs, 'comp');
+document.getElementById('check-comp').onclick = ()=>{
+  let correctCount=0;
+  compQs.forEach((item,i)=>{
+    document.getElementsByName('comp'+i).forEach(radio=>{
+      const label = radio.parentElement;
+      label.classList.remove('correct','wrong');
+      if(parseInt(radio.value)===item.correct){
+        label.classList.add('correct');
+        if(radio.checked) correctCount++;
+      } else if(radio.checked){
+        label.classList.add('wrong');
+      }
+    });
+  });
+  const box = document.getElementById('score-box');
+  box.style.display='block';
+  box.textContent = `Reading Comprehension Score: ${correctCount} / ${compQs.length}`;
+};
+</script>
+</body>
+</html>
