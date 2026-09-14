@@ -450,7 +450,7 @@ function speakAll(onDone){
     const el = document.getElementById('sent'+i);
     clearHighlight();
     u.onstart = ()=>{ el && el.classList.add('speaking'); el && el.scrollIntoView({behavior:'smooth',block:'center'}); };
-    u.onend = ()=>{ i++; next(); };
+    u.onend = ()=>{ if(userStopped) return; i++; next(); };
     u.onerror = ()=>{ if(userStopped) return; i++; next(); };
     window.speechSynthesis.speak(u);
   }
