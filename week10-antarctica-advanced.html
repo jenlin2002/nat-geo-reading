@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 10 (Advanced) · The Last Frontier: Antarctica's Climate Significance</title>
+<style>
+  :root{
+    --ink:#1a1a1a;
+    --parchment:#faf6ec;
+    --parchment-dark:#f0e9d8;
+    --natgeo-yellow:#ffcc00;
+    --teal:#1b4b43;
+    --teal-light:#2e6e63;
+    --brown:#6b4226;
+    --rule:#d8cdb0;
+    --correct:#1b4b43;
+    --wrong:#a33b2b;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--ink);
+    font-family:Georgia, 'Times New Roman', serif;
+    color:var(--ink);
+  }
+  .frame{
+    border:14px solid var(--natgeo-yellow);
+    min-height:100vh;
+    background:var(--parchment);
+  }
+  header{
+    padding:36px 6vw 24px;
+    border-bottom:3px solid var(--ink);
+    background:var(--ink);
+    color:var(--parchment);
+  }
+  .eyebrow{
+    font-family:'Courier New', monospace;
+    letter-spacing:.25em;
+    font-size:.75rem;
+    color:var(--natgeo-yellow);
+    text-transform:uppercase;
+    margin:0 0 10px;
+  }
+  h1{
+    font-size:clamp(1.6rem,4vw,2.6rem);
+    margin:0 0 8px;
+    line-height:1.15;
+  }
+  .subtitle{
+    font-family:Verdana, sans-serif;
+    font-size:.95rem;
+    color:#cfc9b8;
+    margin:0;
+  }
+  nav.tabs{
+    display:flex;
+    flex-wrap:wrap;
+    gap:2px;
+    background:var(--ink);
+    padding:0 6vw;
+  }
+  nav.tabs button{
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+    letter-spacing:.03em;
+    border:none;
+    padding:14px 18px;
+    background:#2a2a2a;
+    color:#cfc9b8;
+    cursor:pointer;
+    border-top:3px solid transparent;
+  }
+  nav.tabs button.active{
+    background:var(--parchment);
+    color:var(--ink);
+    border-top:3px solid var(--natgeo-yellow);
+    font-weight:bold;
+  }
+  main{
+    padding:36px 6vw 80px;
+    max-width:820px;
+    margin:0 auto;
+  }
+  section.panel{display:none;}
+  section.panel.active{display:block;}
+
+  figure{margin:0 0 24px;}
+  figure img{
+    width:100%;
+    display:block;
+    border:1px solid var(--rule);
+  }
+  figcaption{
+    font-family:Verdana, sans-serif;
+    font-size:.75rem;
+    color:#7a7259;
+    margin-top:6px;
+  }
+
+  .video-wrap{
+    position:relative;
+    padding-top:56.25%;
+    margin:0 0 28px;
+    border:1px solid var(--rule);
+  }
+  .video-wrap iframe{
+    position:absolute;top:0;left:0;width:100%;height:100%;border:0;
+  }
+
+  .toolbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-bottom:20px;
+    padding:12px 16px;
+    background:var(--parchment-dark);
+    border-left:4px solid var(--teal);
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+  }
+  button.audio-btn, button.action-btn{
+    font-family:Verdana, sans-serif;
+    cursor:pointer;
+    border:none;
+    border-radius:3px;
+  }
+  button.action-btn{
+    background:var(--teal);
+    color:#fff;
+    padding:10px 18px;
+    font-size:.85rem;
+  }
+  button.action-btn:hover{background:var(--teal-light);}
+  button.action-btn:disabled{background:#999;cursor:default;}
+
+  .article p{
+    font-size:1.05rem;
+    line-height:1.85;
+    margin:0 0 20px;
+  }
+  .sent{
+    position:relative;
+  }
+  button.spk{
+    background:none;
+    border:none;
+    cursor:pointer;
+    color:var(--teal);
+    font-size:.85em;
+    vertical-align:middle;
+    padding:0 3px;
+    opacity:.55;
+  }
+  button.spk:hover{opacity:1;}
+  .sent.speaking{background:#ffe9a3;}
+
+  h2.section-title{
+    font-size:1.3rem;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:8px;
+    margin:0 0 20px;
+  }
+
+  .vocab-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:14px;
+    margin-bottom:32px;
+  }
+  .vocab-card{
+    background:#fff;
+    border:1px solid var(--rule);
+    border-left:4px solid var(--natgeo-yellow);
+    padding:14px 16px;
+    font-family:Verdana, sans-serif;
+  }
+  .vocab-card .w{
+    font-family:Georgia, serif;
+    font-weight:bold;
+    font-size:1.05rem;
+    color:var(--teal);
+  }
+  .vocab-card .pos{
+    font-style:italic;
+    font-size:.8rem;
+    color:#7a7259;
+    margin-left:6px;
+  }
+  .vocab-card .def{font-size:.88rem;margin:6px 0 4px;}
+  .vocab-card .ex{font-size:.82rem;color:#555;}
+
+  .cloze-box{
+    background:#fff;
+    border:1px solid var(--rule);
+    padding:20px;
+    font-size:1rem;
+    line-height:2.1;
+    font-family:Georgia, serif;
+    margin-bottom:16px;
+  }
+  .cloze-box input{
+    width:120px;
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+    padding:3px 6px;
+    border:none;
+    border-bottom:2px solid var(--teal);
+    background:var(--parchment-dark);
+    text-align:center;
+  }
+  .cloze-box input.correct{border-bottom-color:var(--correct);background:#e3efe9;}
+  .cloze-box input.wrong{border-bottom-color:var(--wrong);background:#f7e5e1;}
+  .wordbank{
+    font-family:Verdana, sans-serif;
+    font-size:.82rem;
+    color:#555;
+    margin-bottom:20px;
+    padding:10px 14px;
+    background:var(--parchment-dark);
+  }
+
+  .qcard{
+    background:#fff;
+    border:1px solid var(--rule);
+    padding:16px 18px;
+    margin-bottom:14px;
+    font-family:Verdana, sans-serif;
+  }
+  .qcard p.q{font-size:.95rem;font-weight:bold;margin:0 0 10px;}
+  .qcard label{
+    display:block;
+    font-size:.88rem;
+    padding:6px 8px;
+    margin-bottom:4px;
+    border:1px solid transparent;
+    border-radius:3px;
+    cursor:pointer;
+  }
+  .qcard label:hover{background:var(--parchment-dark);}
+  .qcard label.correct{background:#e3efe9;border-color:var(--correct);}
+  .qcard label.wrong{background:#f7e5e1;border-color:var(--wrong);}
+  textarea.short-answer{
+    width:100%;
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+    padding:8px;
+    border:1px solid var(--rule);
+    min-height:60px;
+  }
+
+  #score-box{
+    margin-top:20px;
+    padding:14px 18px;
+    background:var(--ink);
+    color:var(--natgeo-yellow);
+    font-family:Verdana, sans-serif;
+    font-size:.9rem;
+    display:none;
+  }
+  footer{
+    text-align:center;
+    font-family:Verdana, sans-serif;
+    font-size:.75rem;
+    color:#7a7259;
+    padding:20px 6vw 40px;
+  }
+</style>
+</head>
+<body>
+<div class="frame">
+
+  <header>
+    <p class="eyebrow">Nat-Geo Reading &middot; Week 10 of 10 (進階版) &middot; Polar Science</p>
+    <h1>The Last Frontier: Antarctica's Climate Significance and International Governance</h1>
+    <p class="subtitle">Reading level: US Grade 6–8 &nbsp;|&nbsp; ~300 words</p>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="reading">📖 Reading</button>
+    <button class="tab-btn" data-tab="vocab">🔤 Vocabulary</button>
+    <button class="tab-btn" data-tab="cloze">✏️ Cloze Test</button>
+    <button class="tab-btn" data-tab="listening">🎧 Listening</button>
+    <button class="tab-btn" data-tab="comprehension">🧠 Comprehension</button>
+  </nav>
+
+  <main>
+
+    <!-- ================= READING ================= -->
+    <section class="panel active" id="reading">
+      <div class="video-wrap">
+        <iframe src="https://www.youtube.com/embed/KlDO0C8r_ws" title="NASA: Full Map of Antarctic Ice Flow" allowfullscreen></iframe>
+      </div>
+
+      <figure>
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Emperor%20penguin.jpg" alt="Emperor penguins in Antarctica">
+        <figcaption>Emperor penguins near the Ross Sea, Antarctica. Photo: NOAA / Wikimedia Commons.</figcaption>
+      </figure>
+
+      <div class="toolbar">
+        <button class="action-btn" id="play-full">▶ Read Full Article Aloud</button>
+        <button class="action-btn" id="stop-full" style="background:var(--brown);">■ Stop</button>
+        <span>or click 🔊 next to any sentence to hear just that line</span>
+      </div>
+
+      <div class="article" id="article"></div>
+
+      <figure>
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Ross%20Ice%20Shelf%2C%20Antarctica%20banner.jpg" alt="The vast Ross Ice Shelf in Antarctica">
+        <figcaption>The Ross Ice Shelf, one of Antarctica's massive floating ice platforms. Photo: Wikimedia Commons.</figcaption>
+      </figure>
+    </section>
+
+    <!-- ================= VOCAB ================= -->
+    <section class="panel" id="vocab">
+      <h2 class="section-title">Key Vocabulary</h2>
+      <div class="vocab-grid" id="vocab-grid"></div>
+    </section>
+
+    <!-- ================= CLOZE ================= -->
+    <section class="panel" id="cloze">
+      <h2 class="section-title">Cloze Test</h2>
+      <p style="font-family:Verdana, sans-serif;font-size:.85rem;">Fill in each blank with the correct word from the word bank. Then click "Check Answers."</p>
+      <div class="wordbank">
+        <strong>Word bank:</strong> sovereign &middot; signatory &middot; katabatic &middot; ambient &middot; keystone &middot; paleoclimatic &middot; glacial &middot; anthropogenic &middot; circulation &middot; disproportionate
+      </div>
+      <div class="cloze-box" id="cloze-text"></div>
+      <button class="action-btn" id="check-cloze">Check Answers</button>
+      <span id="cloze-result" style="font-family:Verdana, sans-serif;font-size:.85rem;margin-left:12px;"></span>
+    </section>
+
+    <!-- ================= LISTENING ================= -->
+    <section class="panel" id="listening">
+      <h2 class="section-title">Listening Comprehension</h2>
+      <div class="toolbar">
+        <button class="action-btn" id="play-listen">▶ Play Article Audio</button>
+        <button class="action-btn" id="stop-listen" style="background:var(--brown);">■ Stop</button>
+        <span>Close your eyes and listen — then answer below.</span>
+      </div>
+      <div id="listening-qs"></div>
+      <button class="action-btn" id="check-listening">Check Listening Answers</button>
+    </section>
+
+    <!-- ================= COMPREHENSION ================= -->
+    <section class="panel" id="comprehension">
+      <h2 class="section-title">Reading Comprehension</h2>
+      <div id="comp-qs"></div>
+      <button class="action-btn" id="check-comp">Check Comprehension Answers</button>
+      <div id="score-box"></div>
+    </section>
+
+  </main>
+
+  <footer>National Geographic–style Reading Series &middot; Week 10: Polar Science (Advanced US Grade 6–8) &middot; Built for home English study</footer>
+</div>
+
+<script>
+/* ---------- article sentences ---------- */
+const sentences = [
+"Encompassing approximately 14 million square kilometers, Antarctica ranks as Earth's fifth-largest continent, yet it remains the only landmass without a permanent human population or sovereign national government.",
+"Governed instead by the Antarctic Treaty System, established in 1959 and now encompassing dozens of signatory nations, the continent is designated exclusively for peaceful purposes, with military activity, mineral extraction, and territorial claims largely prohibited or held in abeyance.",
+"Antarctica's ice sheet, which contains roughly seventy percent of the world's fresh water, plays an outsized role in regulating global climate systems.",
+"The continent's extreme conditions, including winter temperatures that can plummet below negative sixty degrees Celsius and katabatic winds exceeding 200 kilometers per hour, create one of the most hostile environments on the planet, yet specialized organisms have evolved remarkable strategies for survival.",
+"Emperor penguins exemplify these adaptations, enduring the Antarctic winter through coordinated huddling behavior in which thousands of individuals rotate positions to equalize exposure to wind chill, a strategy that can raise huddle-core temperatures dramatically above ambient conditions.",
+"Similarly, various seal and whale species exploit the nutrient-rich Southern Ocean, which supports enormous populations of krill, a keystone species underpinning the entire Antarctic marine food web.",
+"Contemporary climate research increasingly focuses on ice sheet stability, particularly in West Antarctica, where warming ocean waters have accelerated glacial melt and raised concerns about potential contributions to global sea level rise.",
+"Ice cores extracted from Antarctic glaciers provide invaluable paleoclimatic records, preserving atmospheric composition data extending back hundreds of thousands of years and enabling scientists to reconstruct historical climate patterns with remarkable precision.",
+"Given Antarctica's disproportionate influence on global sea levels, ocean circulation, and climate regulation, international scientific cooperation there has become increasingly consequential.",
+"Understanding the continent's response to anthropogenic climate change represents one of the most pressing scientific priorities of the coming decades, with implications extending to coastal populations worldwide."
+];
+
+const articleDiv = document.getElementById('article');
+const p1 = document.createElement('p');
+const p2 = document.createElement('p');
+sentences.forEach((s,i)=>{
+  const span = document.createElement('span');
+  span.className = 'sent';
+  span.id = 'sent'+i;
+  span.innerHTML = s + ' <button class="spk" data-i="'+i+'">🔊</button>';
+  (i < 7 ? p1 : p2).appendChild(span);
+  (i < 7 ? p1 : p2).appendChild(document.createTextNode(' '));
+});
+articleDiv.appendChild(p1);
+articleDiv.appendChild(p2);
+
+/* ---------- TTS ---------- */
+let englishVoice = null;
+let voicesReady = false;
+function loadVoices(){
+  const voices = window.speechSynthesis.getVoices();
+  if(voices && voices.length){
+    englishVoice = voices.find(v=>v.lang==='en-US') || voices.find(v=>v.lang && v.lang.startsWith('en')) || voices[0];
+    voicesReady = true;
+  }
+}
+if('speechSynthesis' in window){
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+} else {
+  document.querySelectorAll('.toolbar').forEach(t=>{
+    const warn = document.createElement('div');
+    warn.style.cssText='color:var(--wrong);font-weight:bold;';
+    warn.textContent = '⚠ This browser does not support text-to-speech. Try Chrome or Edge.';
+    t.appendChild(warn);
+  });
+}
+function clearHighlight(){document.querySelectorAll('.sent').forEach(s=>s.classList.remove('speaking'));}
+function makeUtterance(text, rate){
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang='en-US'; u.rate=rate||0.92;
+  if(englishVoice) u.voice = englishVoice;
+  return u;
+}
+let userStopped = false;
+function speakSentence(i){
+  if(!('speechSynthesis' in window)) return;
+  userStopped = false;
+  window.speechSynthesis.cancel();
+  clearHighlight();
+  const u = makeUtterance(sentences[i]);
+  const el = document.getElementById('sent'+i);
+  u.onstart = ()=>{ el && el.classList.add('speaking'); };
+  u.onend = ()=>{ el && el.classList.remove('speaking'); };
+  u.onerror = ()=>{ el && el.classList.remove('speaking'); };
+  window.speechSynthesis.speak(u);
+}
+function speakAll(onDone){
+  if(!('speechSynthesis' in window)) return;
+  userStopped = false;
+  window.speechSynthesis.cancel();
+  clearHighlight();
+  let i=0;
+  function next(){
+    if(userStopped){ return; }
+    if(i>=sentences.length){ clearHighlight(); if(onDone) onDone(); return; }
+    const u = makeUtterance(sentences[i]);
+    const el = document.getElementById('sent'+i);
+    clearHighlight();
+    u.onstart = ()=>{ el && el.classList.add('speaking'); el && el.scrollIntoView({behavior:'smooth',block:'center'}); };
+    u.onend = ()=>{ if(userStopped) return; i++; next(); };
+    u.onerror = ()=>{ if(userStopped) return; i++; next(); };
+    window.speechSynthesis.speak(u);
+  }
+  next();
+}
+function speakWord(word){
+  if(!('speechSynthesis' in window)) return;
+  userStopped = false;
+  window.speechSynthesis.cancel();
+  const u = makeUtterance(word, 0.85);
+  window.speechSynthesis.speak(u);
+}
+function stopSpeaking(){
+  userStopped = true;
+  window.speechSynthesis.cancel();
+  clearHighlight();
+}
+document.addEventListener('click', e=>{
+  if(e.target.matches('.spk')){
+    if(e.target.dataset.word){ speakWord(e.target.dataset.word); }
+    else { speakSentence(parseInt(e.target.dataset.i)); }
+  }
+});
+document.getElementById('play-full').onclick = ()=>speakAll();
+document.getElementById('stop-full').onclick = stopSpeaking;
+document.getElementById('play-listen').onclick = ()=>speakAll();
+document.getElementById('stop-listen').onclick = stopSpeaking;
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.onclick = ()=>{
+    window.speechSynthesis.cancel(); clearHighlight();
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  };
+});
+
+/* ---------- vocabulary ---------- */
+const vocab = [
+  {w:"sovereign", zh:"主權的", pos:"adj.", def:"having independent political authority", ex:"Antarctica has no sovereign national government."},
+  {w:"signatory", zh:"簽署國", pos:"n.", def:"a country that has signed a formal agreement", ex:"Dozens of signatory nations govern Antarctica together."},
+  {w:"katabatic", zh:"下降風的", pos:"adj.", def:"describing strong winds that flow downhill due to gravity", ex:"Katabatic winds can exceed 200 kilometers per hour."},
+  {w:"ambient", zh:"周圍環境的", pos:"adj.", def:"relating to the surrounding conditions", ex:"Huddling raises core temperature above ambient conditions."},
+  {w:"keystone species", zh:"關鍵物種", pos:"n.", def:"a species essential to an ecosystem's structure", ex:"Krill is a keystone species in the Antarctic food web."},
+  {w:"paleoclimatic", zh:"古氣候的", pos:"adj.", def:"relating to climate conditions of the ancient past", ex:"Ice cores provide invaluable paleoclimatic records."},
+  {w:"glacial", zh:"冰川的", pos:"adj.", def:"relating to glaciers or ice", ex:"Warming waters have accelerated glacial melt."},
+  {w:"anthropogenic", zh:"人為造成的", pos:"adj.", def:"caused or influenced by human activity", ex:"Scientists study Antarctica's response to anthropogenic climate change."},
+  {w:"circulation", zh:"循環", pos:"n.", def:"the continuous movement of something, like water or air", ex:"Antarctica affects global ocean circulation."},
+  {w:"disproportionate", zh:"不成比例的", pos:"adj.", def:"too large or small in relation to something else", ex:"Antarctica has a disproportionate influence on global sea levels."}
+];
+const vg = document.getElementById('vocab-grid');
+vocab.forEach(v=>{
+  const c = document.createElement('div');
+  c.className='vocab-card';
+  c.innerHTML = `<span class="w">${v.w}</span><span class="pos">${v.pos}</span>
+    <button class="spk" data-word="${v.w}" style="opacity:.85;">🔊</button>
+    <div class="zh" style="font-family:'Microsoft JhengHei', sans-serif; color:var(--brown); font-size:.85rem; margin:4px 0;">${v.zh}</div>
+    <div class="def">${v.def}</div>
+    <div class="ex">"${v.ex}"</div>`;
+  vg.appendChild(c);
+});
+
+/* ---------- cloze ---------- */
+const clozeAnswers = ["sovereign","signatory","katabatic","ambient","keystone","paleoclimatic","glacial","anthropogenic","circulation","disproportionate"];
+const clozeHTML = `
+Antarctica has no <input data-a="0"> national government; it is governed by dozens of <input data-a="1"> nations under the Antarctic Treaty System.<br><br>
+The continent's <input data-a="2"> winds can exceed 200 kilometers per hour. Emperor penguins huddle together to raise their core temperature above <input data-a="3"> conditions, while krill serves as a <input data-a="4"> species in the marine food web.<br><br>
+Ice cores provide valuable <input data-a="5"> records. Warming waters have accelerated <input data-a="6"> melt, and scientists study Antarctica's response to <input data-a="7"> climate change.<br><br>
+Given its <input data-a="9"> influence on global sea levels and ocean <input data-a="8"> , international cooperation there is increasingly important.
+`;
+document.getElementById('cloze-text').innerHTML = clozeHTML;
+document.getElementById('check-cloze').onclick = ()=>{
+  const inputs = document.querySelectorAll('#cloze-text input');
+  let correct=0;
+  inputs.forEach(inp=>{
+    const ans = clozeAnswers[parseInt(inp.dataset.a)];
+    const val = inp.value.trim();
+    if(val.toLowerCase()===ans.toLowerCase()){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  document.getElementById('cloze-result').textContent = `${correct} / ${inputs.length} correct`;
+};
+
+/* ---------- listening questions ---------- */
+const listeningQs = [
+  {q:"What is unique about Antarctica compared to other continents?", opts:["It has the largest population","It has no permanent population or sovereign government","It is the smallest continent","It has no ice"], correct:1},
+  {q:"What does the Antarctic Treaty System designate the continent for?", opts:["Military bases","Peaceful purposes only","Mineral mining","Territorial wars"], correct:1},
+  {q:"How do emperor penguins survive extreme cold as a group?", opts:["They migrate north","They huddle together and rotate positions to share warmth","They build fires","They hibernate individually"], correct:1},
+  {q:"What role does krill play in the Antarctic ecosystem?", opts:["It has no ecological role","It is a keystone species supporting the marine food web","It only lives on land","It causes ice to melt"], correct:1},
+  {q:"What do ice cores from Antarctic glaciers provide?", opts:["Nothing useful","Valuable paleoclimatic records of Earth's past atmosphere","Only decoration for museums","Information about outer space"], correct:1},
+  {q:"Why has international scientific cooperation in Antarctica become increasingly important?", opts:["Because of its disproportionate influence on global sea levels and climate","Because it has no scientific value","Because tourism has stopped","Because no research is being conducted there"], correct:0}
+];
+function buildMC(container, list, namePrefix){
+  list.forEach((item,i)=>{
+    const card = document.createElement('div');
+    card.className='qcard';
+    let optsHTML = item.opts.map((o,j)=>
+      `<label><input type="radio" name="${namePrefix}${i}" value="${j}"> ${o}</label>`
+    ).join('');
+    card.innerHTML = `<p class="q">${i+1}. ${item.q}</p>${optsHTML}`;
+    container.appendChild(card);
+  });
+}
+buildMC(document.getElementById('listening-qs'), listeningQs, 'listen');
+document.getElementById('check-listening').onclick = ()=>{
+  listeningQs.forEach((item,i)=>{
+    document.getElementsByName('listen'+i).forEach(radio=>{
+      const label = radio.parentElement;
+      label.classList.remove('correct','wrong');
+      if(parseInt(radio.value)===item.correct && radio.checked) label.classList.add('correct');
+      else if(radio.checked) label.classList.add('wrong');
+      else if(parseInt(radio.value)===item.correct) label.classList.add('correct');
+    });
+  });
+};
+
+/* ---------- reading comprehension ---------- */
+const compQs = [
+  {q:"What is the main idea of this article?", opts:["Antarctica is a governed, scientifically vital continent whose climate significance and unique governance make it globally important","Antarctica has no scientific or political significance","Antarctica is owned by a single powerful nation","Antarctica has no wildlife"], correct:0},
+  {q:"According to the article, what percentage of the world's fresh water does Antarctica's ice sheet contain?", opts:["Roughly seventy percent","About ten percent","Nearly zero percent","Exactly fifty percent"], correct:0},
+  {q:"Why do you think scientists study ice cores extracted from Antarctic glaciers? (Think about it, then choose the best answer.)", opts:["Because trapped atmospheric data in the ice allows them to reconstruct historical climate conditions over vast timescales","Because ice cores are valuable as jewelry","Because ice cores predict the weather tomorrow","Because ice cores have no scientific use"], correct:0},
+  {q:"In the sentence \"Given Antarctica's disproportionate influence on global sea levels, ocean circulation, and climate regulation,\" what does 'disproportionate' most likely mean?", opts:["Exactly equal to its size","Unusually large or significant relative to its size","Completely insignificant","Randomly distributed"], correct:1}
+];
+buildMC(document.getElementById('comp-qs'), compQs, 'comp');
+document.getElementById('check-comp').onclick = ()=>{
+  let correctCount=0;
+  compQs.forEach((item,i)=>{
+    document.getElementsByName('comp'+i).forEach(radio=>{
+      const label = radio.parentElement;
+      label.classList.remove('correct','wrong');
+      if(parseInt(radio.value)===item.correct){
+        label.classList.add('correct');
+        if(radio.checked) correctCount++;
+      } else if(radio.checked){
+        label.classList.add('wrong');
+      }
+    });
+  });
+  const box = document.getElementById('score-box');
+  box.style.display='block';
+  box.textContent = `Reading Comprehension Score: ${correctCount} / ${compQs.length}`;
+};
+</script>
+</body>
+</html>

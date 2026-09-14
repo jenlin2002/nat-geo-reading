@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 6 (Easy) · The Amazon: Earth's Largest Rainforest</title>
+<style>
+  :root{
+    --ink:#1a1a1a;
+    --parchment:#faf6ec;
+    --parchment-dark:#f0e9d8;
+    --natgeo-yellow:#ffcc00;
+    --teal:#1b4b43;
+    --teal-light:#2e6e63;
+    --brown:#6b4226;
+    --rule:#d8cdb0;
+    --correct:#1b4b43;
+    --wrong:#a33b2b;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--ink);
+    font-family:Georgia, 'Times New Roman', serif;
+    color:var(--ink);
+  }
+  .frame{
+    border:14px solid var(--natgeo-yellow);
+    min-height:100vh;
+    background:var(--parchment);
+  }
+  header{
+    padding:36px 6vw 24px;
+    border-bottom:3px solid var(--ink);
+    background:var(--ink);
+    color:var(--parchment);
+  }
+  .eyebrow{
+    font-family:'Courier New', monospace;
+    letter-spacing:.25em;
+    font-size:.75rem;
+    color:var(--natgeo-yellow);
+    text-transform:uppercase;
+    margin:0 0 10px;
+  }
+  h1{
+    font-size:clamp(1.6rem,4vw,2.6rem);
+    margin:0 0 8px;
+    line-height:1.15;
+  }
+  .subtitle{
+    font-family:Verdana, sans-serif;
+    font-size:.95rem;
+    color:#cfc9b8;
+    margin:0;
+  }
+  nav.tabs{
+    display:flex;
+    flex-wrap:wrap;
+    gap:2px;
+    background:var(--ink);
+    padding:0 6vw;
+  }
+  nav.tabs button{
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+    letter-spacing:.03em;
+    border:none;
+    padding:14px 18px;
+    background:#2a2a2a;
+    color:#cfc9b8;
+    cursor:pointer;
+    border-top:3px solid transparent;
+  }
+  nav.tabs button.active{
+    background:var(--parchment);
+    color:var(--ink);
+    border-top:3px solid var(--natgeo-yellow);
+    font-weight:bold;
+  }
+  main{
+    padding:36px 6vw 80px;
+    max-width:820px;
+    margin:0 auto;
+  }
+  section.panel{display:none;}
+  section.panel.active{display:block;}
+
+  figure{margin:0 0 24px;}
+  figure img{
+    width:100%;
+    display:block;
+    border:1px solid var(--rule);
+  }
+  figcaption{
+    font-family:Verdana, sans-serif;
+    font-size:.75rem;
+    color:#7a7259;
+    margin-top:6px;
+  }
+
+  .video-wrap{
+    position:relative;
+    padding-top:56.25%;
+    margin:0 0 28px;
+    border:1px solid var(--rule);
+  }
+  .video-wrap iframe{
+    position:absolute;top:0;left:0;width:100%;height:100%;border:0;
+  }
+
+  .toolbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-bottom:20px;
+    padding:12px 16px;
+    background:var(--parchment-dark);
+    border-left:4px solid var(--teal);
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+  }
+  button.audio-btn, button.action-btn{
+    font-family:Verdana, sans-serif;
+    cursor:pointer;
+    border:none;
+    border-radius:3px;
+  }
+  button.action-btn{
+    background:var(--teal);
+    color:#fff;
+    padding:10px 18px;
+    font-size:.85rem;
+  }
+  button.action-btn:hover{background:var(--teal-light);}
+  button.action-btn:disabled{background:#999;cursor:default;}
+
+  .article p{
+    font-size:1.05rem;
+    line-height:1.85;
+    margin:0 0 20px;
+  }
+  .sent{
+    position:relative;
+  }
+  button.spk{
+    background:none;
+    border:none;
+    cursor:pointer;
+    color:var(--teal);
+    font-size:.85em;
+    vertical-align:middle;
+    padding:0 3px;
+    opacity:.55;
+  }
+  button.spk:hover{opacity:1;}
+  .sent.speaking{background:#ffe9a3;}
+
+  h2.section-title{
+    font-size:1.3rem;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:8px;
+    margin:0 0 20px;
+  }
+
+  .vocab-grid{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:14px;
+    margin-bottom:32px;
+  }
+  .vocab-card{
+    background:#fff;
+    border:1px solid var(--rule);
+    border-left:4px solid var(--natgeo-yellow);
+    padding:14px 16px;
+    font-family:Verdana, sans-serif;
+  }
+  .vocab-card .w{
+    font-family:Georgia, serif;
+    font-weight:bold;
+    font-size:1.05rem;
+    color:var(--teal);
+  }
+  .vocab-card .pos{
+    font-style:italic;
+    font-size:.8rem;
+    color:#7a7259;
+    margin-left:6px;
+  }
+  .vocab-card .def{font-size:.88rem;margin:6px 0 4px;}
+  .vocab-card .ex{font-size:.82rem;color:#555;}
+
+  .cloze-box{
+    background:#fff;
+    border:1px solid var(--rule);
+    padding:20px;
+    font-size:1rem;
+    line-height:2.1;
+    font-family:Georgia, serif;
+    margin-bottom:16px;
+  }
+  .cloze-box input{
+    width:120px;
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+    padding:3px 6px;
+    border:none;
+    border-bottom:2px solid var(--teal);
+    background:var(--parchment-dark);
+    text-align:center;
+  }
+  .cloze-box input.correct{border-bottom-color:var(--correct);background:#e3efe9;}
+  .cloze-box input.wrong{border-bottom-color:var(--wrong);background:#f7e5e1;}
+  .wordbank{
+    font-family:Verdana, sans-serif;
+    font-size:.82rem;
+    color:#555;
+    margin-bottom:20px;
+    padding:10px 14px;
+    background:var(--parchment-dark);
+  }
+
+  .qcard{
+    background:#fff;
+    border:1px solid var(--rule);
+    padding:16px 18px;
+    margin-bottom:14px;
+    font-family:Verdana, sans-serif;
+  }
+  .qcard p.q{font-size:.95rem;font-weight:bold;margin:0 0 10px;}
+  .qcard label{
+    display:block;
+    font-size:.88rem;
+    padding:6px 8px;
+    margin-bottom:4px;
+    border:1px solid transparent;
+    border-radius:3px;
+    cursor:pointer;
+  }
+  .qcard label:hover{background:var(--parchment-dark);}
+  .qcard label.correct{background:#e3efe9;border-color:var(--correct);}
+  .qcard label.wrong{background:#f7e5e1;border-color:var(--wrong);}
+  textarea.short-answer{
+    width:100%;
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+    padding:8px;
+    border:1px solid var(--rule);
+    min-height:60px;
+  }
+
+  #score-box{
+    margin-top:20px;
+    padding:14px 18px;
+    background:var(--ink);
+    color:var(--natgeo-yellow);
+    font-family:Verdana, sans-serif;
+    font-size:.9rem;
+    display:none;
+  }
+  footer{
+    text-align:center;
+    font-family:Verdana, sans-serif;
+    font-size:.75rem;
+    color:#7a7259;
+    padding:20px 6vw 40px;
+  }
+</style>
+</head>
+<body>
+<div class="frame">
+
+  <header>
+    <p class="eyebrow">Nat-Geo Reading &middot; Week 6 of 10 (簡化版) &middot; Rainforest Ecosystems</p>
+    <h1>The Amazon: Earth's Largest Rainforest</h1>
+    <p class="subtitle">Reading level: CEFR A2–B1 &nbsp;|&nbsp; ~230 words</p>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="reading">📖 Reading</button>
+    <button class="tab-btn" data-tab="vocab">🔤 Vocabulary</button>
+    <button class="tab-btn" data-tab="cloze">✏️ Cloze Test</button>
+    <button class="tab-btn" data-tab="listening">🎧 Listening</button>
+    <button class="tab-btn" data-tab="comprehension">🧠 Comprehension</button>
+  </nav>
+
+  <main>
+
+    <!-- ================= READING ================= -->
+    <section class="panel active" id="reading">
+      <div class="video-wrap">
+        <iframe src="https://www.youtube.com/embed/o_4qvQvy5x0" title="What are the threats facing the Amazon? - WWF" allowfullscreen></iframe>
+      </div>
+
+      <figure>
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Aerial%20view%20of%20the%20Amazon%20Rainforest.jpg" alt="Aerial view of the Amazon Rainforest canopy">
+        <figcaption>An aerial view of the dense, unbroken canopy of the Amazon Rainforest. Photo: Wikimedia Commons.</figcaption>
+      </figure>
+
+      <div class="toolbar">
+        <button class="action-btn" id="play-full">▶ Read Full Article Aloud</button>
+        <button class="action-btn" id="stop-full" style="background:var(--brown);">■ Stop</button>
+        <span>or click 🔊 next to any sentence to hear just that line</span>
+      </div>
+
+      <div class="article" id="article"></div>
+
+      <figure>
+        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Scarlet%20Macaw.jpg" alt="A scarlet macaw, a colorful bird of the Amazon Rainforest">
+        <figcaption>A scarlet macaw, one of thousands of colorful bird species living in the Amazon. Photo: Wikimedia Commons.</figcaption>
+      </figure>
+    </section>
+
+    <!-- ================= VOCAB ================= -->
+    <section class="panel" id="vocab">
+      <h2 class="section-title">Key Vocabulary</h2>
+      <div class="vocab-grid" id="vocab-grid"></div>
+    </section>
+
+    <!-- ================= CLOZE ================= -->
+    <section class="panel" id="cloze">
+      <h2 class="section-title">Cloze Test</h2>
+      <p style="font-family:Verdana, sans-serif;font-size:.85rem;">Fill in each blank with the correct word from the word bank. Then click "Check Answers."</p>
+      <div class="wordbank">
+        <strong>Word bank:</strong> rainforest &middot; species &middot; canopy &middot; carbon dioxide &middot; oxygen &middot; destroys &middot; protect &middot; releases &middot; Indigenous &middot; incredible
+      </div>
+      <div class="cloze-box" id="cloze-text"></div>
+      <button class="action-btn" id="check-cloze">Check Answers</button>
+      <span id="cloze-result" style="font-family:Verdana, sans-serif;font-size:.85rem;margin-left:12px;"></span>
+    </section>
+
+    <!-- ================= LISTENING ================= -->
+    <section class="panel" id="listening">
+      <h2 class="section-title">Listening Comprehension</h2>
+      <div class="toolbar">
+        <button class="action-btn" id="play-listen">▶ Play Article Audio</button>
+        <button class="action-btn" id="stop-listen" style="background:var(--brown);">■ Stop</button>
+        <span>Close your eyes and listen — then answer below.</span>
+      </div>
+      <div id="listening-qs"></div>
+      <button class="action-btn" id="check-listening">Check Listening Answers</button>
+    </section>
+
+    <!-- ================= COMPREHENSION ================= -->
+    <section class="panel" id="comprehension">
+      <h2 class="section-title">Reading Comprehension</h2>
+      <div id="comp-qs"></div>
+      <button class="action-btn" id="check-comp">Check Comprehension Answers</button>
+      <div id="score-box"></div>
+    </section>
+
+  </main>
+
+  <footer>National Geographic–style Reading Series &middot; Week 6: Rainforest Ecosystems (Simplified CEFR A2–B1) &middot; Built for home English study</footer>
+</div>
+
+<script>
+/* ---------- article sentences ---------- */
+const sentences = [
+"The Amazon Rainforest is the largest rainforest on Earth.",
+"It covers a huge area in South America.",
+"Most of the Amazon is in Brazil, but it also stretches into other countries.",
+"The Amazon is home to millions of different plants and animals.",
+"Scientists believe it holds more species than any other place on land.",
+"Colorful birds like macaws fly through the trees.",
+"Jaguars hunt quietly on the forest floor.",
+"Monkeys swing from branch to branch high above.",
+"The tall trees in the Amazon form a thick layer called the canopy.",
+"Sunlight has trouble reaching the ground below.",
+"Many animals live their whole lives up in the canopy and never touch the ground.",
+"The Amazon is also important for our planet's air.",
+"The trees take in carbon dioxide and release oxygen.",
+"Because of this, people sometimes call the Amazon \"the lungs of the Earth.\"",
+"Sadly, large parts of the Amazon are being cut down.",
+"People clear the forest for farms and cattle ranches.",
+"This destroys the homes of countless animals and releases stored carbon into the air.",
+"Many groups are working to protect the Amazon.",
+"Indigenous communities have lived in the forest for thousands of years and understand it deeply.",
+"Scientists, governments, and local people are working together to save this incredible rainforest for the future."
+];
+
+const articleDiv = document.getElementById('article');
+const p1 = document.createElement('p');
+const p2 = document.createElement('p');
+sentences.forEach((s,i)=>{
+  const span = document.createElement('span');
+  span.className = 'sent';
+  span.id = 'sent'+i;
+  span.innerHTML = s + ' <button class="spk" data-i="'+i+'">🔊</button>';
+  (i < 7 ? p1 : p2).appendChild(span);
+  (i < 7 ? p1 : p2).appendChild(document.createTextNode(' '));
+});
+articleDiv.appendChild(p1);
+articleDiv.appendChild(p2);
+
+/* ---------- TTS ---------- */
+let englishVoice = null;
+let voicesReady = false;
+function loadVoices(){
+  const voices = window.speechSynthesis.getVoices();
+  if(voices && voices.length){
+    englishVoice = voices.find(v=>v.lang==='en-US') || voices.find(v=>v.lang && v.lang.startsWith('en')) || voices[0];
+    voicesReady = true;
+  }
+}
+if('speechSynthesis' in window){
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+} else {
+  document.querySelectorAll('.toolbar').forEach(t=>{
+    const warn = document.createElement('div');
+    warn.style.cssText='color:var(--wrong);font-weight:bold;';
+    warn.textContent = '⚠ This browser does not support text-to-speech. Try Chrome or Edge.';
+    t.appendChild(warn);
+  });
+}
+function clearHighlight(){document.querySelectorAll('.sent').forEach(s=>s.classList.remove('speaking'));}
+function makeUtterance(text, rate){
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang='en-US'; u.rate=rate||0.92;
+  if(englishVoice) u.voice = englishVoice;
+  return u;
+}
+let userStopped = false;
+function speakSentence(i){
+  if(!('speechSynthesis' in window)) return;
+  userStopped = false;
+  window.speechSynthesis.cancel();
+  clearHighlight();
+  const u = makeUtterance(sentences[i]);
+  const el = document.getElementById('sent'+i);
+  u.onstart = ()=>{ el && el.classList.add('speaking'); };
+  u.onend = ()=>{ el && el.classList.remove('speaking'); };
+  u.onerror = ()=>{ el && el.classList.remove('speaking'); };
+  window.speechSynthesis.speak(u);
+}
+function speakAll(onDone){
+  if(!('speechSynthesis' in window)) return;
+  userStopped = false;
+  window.speechSynthesis.cancel();
+  clearHighlight();
+  let i=0;
+  function next(){
+    if(userStopped){ return; }
+    if(i>=sentences.length){ clearHighlight(); if(onDone) onDone(); return; }
+    const u = makeUtterance(sentences[i]);
+    const el = document.getElementById('sent'+i);
+    clearHighlight();
+    u.onstart = ()=>{ el && el.classList.add('speaking'); el && el.scrollIntoView({behavior:'smooth',block:'center'}); };
+    u.onend = ()=>{ if(userStopped) return; i++; next(); };
+    u.onerror = ()=>{ if(userStopped) return; i++; next(); };
+    window.speechSynthesis.speak(u);
+  }
+  next();
+}
+function speakWord(word){
+  if(!('speechSynthesis' in window)) return;
+  userStopped = false;
+  window.speechSynthesis.cancel();
+  const u = makeUtterance(word, 0.85);
+  window.speechSynthesis.speak(u);
+}
+function stopSpeaking(){
+  userStopped = true;
+  window.speechSynthesis.cancel();
+  clearHighlight();
+}
+document.addEventListener('click', e=>{
+  if(e.target.matches('.spk')){
+    if(e.target.dataset.word){ speakWord(e.target.dataset.word); }
+    else { speakSentence(parseInt(e.target.dataset.i)); }
+  }
+});
+document.getElementById('play-full').onclick = ()=>speakAll();
+document.getElementById('stop-full').onclick = stopSpeaking;
+document.getElementById('play-listen').onclick = ()=>speakAll();
+document.getElementById('stop-listen').onclick = stopSpeaking;
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tab-btn').forEach(btn=>{
+  btn.onclick = ()=>{
+    window.speechSynthesis.cancel(); clearHighlight();
+    document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  };
+});
+
+/* ---------- vocabulary ---------- */
+const vocab = [
+  {w:"rainforest", zh:"雨林", pos:"n.", def:"a thick forest that gets a lot of rain", ex:"The Amazon Rainforest is the largest in the world."},
+  {w:"species", zh:"物種", pos:"n.", def:"a group of similar living things", ex:"The Amazon has more species than any other place."},
+  {w:"canopy", zh:"樹冠層", pos:"n.", def:"the top layer of leaves and branches in a forest", ex:"Many animals live in the canopy."},
+  {w:"oxygen", zh:"氧氣", pos:"n.", def:"the gas that people and animals need to breathe", ex:"Trees release oxygen into the air."},
+  {w:"carbon dioxide", zh:"二氧化碳", pos:"n.", def:"a gas that trees take in from the air", ex:"Trees take in carbon dioxide."},
+  {w:"indigenous", zh:"原住民的", pos:"adj.", def:"originally living in a place", ex:"Indigenous communities have lived in the forest for thousands of years."},
+  {w:"destroy", zh:"破壞、摧毀", pos:"v.", def:"to damage something completely", ex:"Cutting down trees can destroy animal homes."},
+  {w:"protect", zh:"保護", pos:"v.", def:"to keep something safe", ex:"Many groups work to protect the Amazon."},
+  {w:"release", zh:"釋放", pos:"v.", def:"to let something out or go free", ex:"Cutting trees releases carbon into the air."},
+  {w:"incredible", zh:"令人驚嘆的", pos:"adj.", def:"amazing or hard to believe", ex:"The Amazon is an incredible rainforest."}
+];
+const vg = document.getElementById('vocab-grid');
+vocab.forEach(v=>{
+  const c = document.createElement('div');
+  c.className='vocab-card';
+  c.innerHTML = `<span class="w">${v.w}</span><span class="pos">${v.pos}</span>
+    <button class="spk" data-word="${v.w}" style="opacity:.85;">🔊</button>
+    <div class="zh" style="font-family:'Microsoft JhengHei', sans-serif; color:var(--brown); font-size:.85rem; margin:4px 0;">${v.zh}</div>
+    <div class="def">${v.def}</div>
+    <div class="ex">"${v.ex}"</div>`;
+  vg.appendChild(c);
+});
+
+/* ---------- cloze ---------- */
+const clozeAnswers = ["rainforest","species","canopy","carbon dioxide","oxygen","destroys","protect","releases","Indigenous","incredible"];
+const clozeHTML = `
+The Amazon <input data-a="0"> is the largest in the world, with more <input data-a="1"> than any other place on land. Tall trees form a thick layer called the <input data-a="2"> .<br><br>
+The trees take in <input data-a="3"> and release <input data-a="4"> into the air. Cutting down the forest <input data-a="5"> animal homes and <input data-a="6"> stored carbon.<br><br>
+Many groups work to <input data-a="7"> the Amazon. <input data-a="8"> communities have lived there for thousands of years. Together, people are working to save this <input data-a="9"> rainforest.
+`;
+document.getElementById('cloze-text').innerHTML = clozeHTML;
+document.getElementById('check-cloze').onclick = ()=>{
+  const inputs = document.querySelectorAll('#cloze-text input');
+  let correct=0;
+  inputs.forEach(inp=>{
+    const ans = clozeAnswers[parseInt(inp.dataset.a)];
+    const val = inp.value.trim();
+    if(val.toLowerCase()===ans.toLowerCase()){ inp.classList.add('correct'); inp.classList.remove('wrong'); correct++; }
+    else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
+  });
+  document.getElementById('cloze-result').textContent = `${correct} / ${inputs.length} correct`;
+};
+
+/* ---------- listening questions ---------- */
+const listeningQs = [
+  {q:"Where is most of the Amazon Rainforest located?", opts:["Africa","Brazil","Australia","India"], correct:1},
+  {q:"What do scientists believe about the Amazon's species?", opts:["It has very few species","It holds more species than any other place on land","It has no animals","All its species are the same"], correct:1},
+  {q:"What is the canopy?", opts:["The forest floor","The top layer of leaves and branches","A type of river","A kind of animal"], correct:1},
+  {q:"What do trees do with carbon dioxide and oxygen?", opts:["They take in oxygen and release carbon dioxide","They take in carbon dioxide and release oxygen","They ignore both gases","They only use carbon dioxide"], correct:1},
+  {q:"Why are large parts of the Amazon being cut down?", opts:["For farms and cattle ranches","Because trees are not useful","Because of cold weather","Because animals ask for it"], correct:0},
+  {q:"Who understands the forest deeply and has lived there for thousands of years?", opts:["Tourists","Indigenous communities","Scientists only","Governments only"], correct:1}
+];
+function buildMC(container, list, namePrefix){
+  list.forEach((item,i)=>{
+    const card = document.createElement('div');
+    card.className='qcard';
+    let optsHTML = item.opts.map((o,j)=>
+      `<label><input type="radio" name="${namePrefix}${i}" value="${j}"> ${o}</label>`
+    ).join('');
+    card.innerHTML = `<p class="q">${i+1}. ${item.q}</p>${optsHTML}`;
+    container.appendChild(card);
+  });
+}
+buildMC(document.getElementById('listening-qs'), listeningQs, 'listen');
+document.getElementById('check-listening').onclick = ()=>{
+  listeningQs.forEach((item,i)=>{
+    document.getElementsByName('listen'+i).forEach(radio=>{
+      const label = radio.parentElement;
+      label.classList.remove('correct','wrong');
+      if(parseInt(radio.value)===item.correct && radio.checked) label.classList.add('correct');
+      else if(radio.checked) label.classList.add('wrong');
+      else if(parseInt(radio.value)===item.correct) label.classList.add('correct');
+    });
+  });
+};
+
+/* ---------- reading comprehension ---------- */
+const compQs = [
+  {q:"What is this article mainly about?", opts:["The Amazon Rainforest's importance and the threats it faces","How to grow crops in Brazil","The history of South America","How birds fly"], correct:0},
+  {q:"According to the article, why do people call the Amazon \"the lungs of the Earth\"?", opts:["Because it takes in carbon dioxide and releases oxygen","Because it looks like human lungs","Because it helps people breathe underwater","Because it is shaped like lungs"], correct:0},
+  {q:"Why do you think many animals in the canopy never touch the ground? (Think about it, then choose the best answer.)", opts:["Because the canopy provides food, shelter, and safety high above the forest floor","Because the ground is too hot","Because they cannot walk","Because there is no ground in the Amazon"], correct:0},
+  {q:"In the sentence \"This destroys the homes of countless animals,\" what does 'countless' most likely mean?", opts:["Very few","Too many to count","Exactly one hundred","None at all"], correct:1}
+];
+buildMC(document.getElementById('comp-qs'), compQs, 'comp');
+document.getElementById('check-comp').onclick = ()=>{
+  let correctCount=0;
+  compQs.forEach((item,i)=>{
+    document.getElementsByName('comp'+i).forEach(radio=>{
+      const label = radio.parentElement;
+      label.classList.remove('correct','wrong');
+      if(parseInt(radio.value)===item.correct){
+        label.classList.add('correct');
+        if(radio.checked) correctCount++;
+      } else if(radio.checked){
+        label.classList.add('wrong');
+      }
+    });
+  });
+  const box = document.getElementById('score-box');
+  box.style.display='block';
+  box.textContent = `Reading Comprehension Score: ${correctCount} / ${compQs.length}`;
+};
+</script>
+</body>
+</html>
