@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Week 13 (Advanced) · Superstorms: The Anatomy of Mega Hurricanes</title>
+  <style>
+  :root{
+    --ink:#1a1a1a;
+    --parchment:#faf6ec;
+    --parchment-dark:#f0e9d8;
+    --natgeo-yellow:#ffcc00;
+    --teal:#1b4b43;
+    --teal-light:#2e6e63;
+    --brown:#6b4226;
+    --rule:#d8cdb0;
+    --correct:#1b4b43;
+    --wrong:#a33b2b;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--ink);
+    font-family:Georgia, 'Times New Roman', serif;
+    color:var(--ink);
+  }
+  .frame{
+    border:14px solid var(--natgeo-yellow);
+    min-height:100vh;
+    background:var(--parchment);
+  }
+  header{
+    padding:36px 6vw 24px;
+    border-bottom:3px solid var(--ink);
+    background:var(--ink);
+    color:var(--parchment);
+  }
+  .eyebrow{
+    font-family:'Courier New', monospace;
+    letter-spacing:.25em;
+    font-size:.75rem;
+    color:var(--natgeo-yellow);
+    text-transform:uppercase;
+    margin:0 0 10px;
+  }
+  h1{
+    font-size:clamp(1.6rem,4vw,2.6rem);
+    margin:0 0 8px;
+    line-height:1.15;
+  }
+  .subtitle{
+    font-family:Verdana, sans-serif;
+    font-size:.95rem;
+    color:#cfc9b8;
+    margin:0;
+  }
+  nav.tabs{
+    display:flex;
+    flex-wrap:wrap;
+    gap:2px;
+    background:var(--ink);
+    padding:0 6vw;
+  }
+  nav.tabs button{
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+    letter-spacing:.03em;
+    border:none;
+    padding:14px 18px;
+    background:#2a2a2a;
+    color:#cfc9b8;
+    cursor:pointer;
+    border-top:3px solid transparent;
+  }
+  nav.tabs button.active{
+    background:var(--parchment);
+    color:var(--ink);
+    border-top:3px solid var(--natgeo-yellow);
+    font-weight:bold;
+  }
+  main{
+    padding:36px 6vw 80px;
+    max-width:820px;
+    margin:0 auto;
+  }
+  section.panel{display:none;}
+  section.panel.active{display:block;}
+  figure{margin:0 0 24px;}
+  figure img{
+    width:100%;
+    display:block;
+    border:1px solid var(--rule);
+  }
+  figcaption{
+    font-family:Verdana, sans-serif;
+    font-size:.75rem;
+    color:#7a7259;
+    margin-top:6px;
+  }
+  .video-wrap{
+    position:relative;
+    padding-top:56.25%;
+    margin:0 0 28px;
+    border:1px solid var(--rule);
+    background:#000;
+  }
+  .video-wrap iframe{
+    position:absolute;top:0;left:0;width:100%;height:100%;border:0;
+  }
+  .toolbar{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+    align-items:center;
+    margin-bottom:20px;
+    padding:12px 16px;
+    background:var(--parchment-dark);
+    border-left:4px solid var(--teal);
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+  }
+  button.audio-btn, button.action-btn{
+    font-family:Verdana, sans-serif;
+    cursor:pointer;
+    border:none;
+    border-radius:3px;
+  }
+  button.action-btn{
+    background:var(--teal);
+    color:#fff;
+    padding:10px 18px;
+    font-size:.85rem;
+  }
+  button.action-btn:hover{background:var(--teal-light);}
+  button.action-btn:disabled{background:#999;cursor:default;}
+  .article p{
+    font-size:1.05rem;
+    line-height:1.8;
+    margin:0 0 1.5em;
+  }
+  .sent{
+    cursor:pointer;
+    padding:2px 2px;
+    border-radius:2px;
+    transition:background .15s;
+  }
+  .sent:hover{background:rgba(255,204,0,.35);}
+  .sent.speaking{
+    background:var(--natgeo-yellow);
+    color:var(--ink);
+    font-weight:600;
+  }
+  .sent-ctrl{
+    display:inline-block;
+    font-size:.75rem;
+    margin-left:4px;
+    opacity:.55;
+    user-select:none;
+  }
+  .sent:hover .sent-ctrl{opacity:1;}
+  h2.section-title{
+    font-size:1.3rem;
+    border-bottom:2px solid var(--ink);
+    padding-bottom:6px;
+    margin:0 0 20px;
+    font-family:'Courier New', monospace;
+    letter-spacing:.05em;
+    text-transform:uppercase;
+  }
+  .vocab-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fill, minmax(240px, 1fr));
+    gap:14px;
+    margin-bottom:30px;
+  }
+  .vocab-card{
+    background:#fff;
+    border:1px solid var(--rule);
+    border-left:4px solid var(--natgeo-yellow);
+    padding:14px 16px;
+  }
+  .vocab-card .w{
+    font-size:1.1rem;
+    font-weight:bold;
+    color:var(--teal);
+  }
+  .vocab-card .pos{
+    font-family:'Courier New', monospace;
+    font-size:.75rem;
+    color:#777;
+    margin-left:6px;
+  }
+  .vocab-card .def{
+    font-family:Verdana, sans-serif;
+    font-size:.82rem;
+    margin:6px 0;
+    line-height:1.45;
+  }
+  .vocab-card .ex{
+    font-size:.82rem;
+    color:#555;
+    font-style:italic;
+  }
+  .vocab-card button.spk{
+    float:right;
+    background:none;
+    border:none;
+    cursor:pointer;
+    font-size:1rem;
+    padding:0;
+  }
+  .wordbank{
+    background:var(--parchment-dark);
+    border:1px dashed var(--rule);
+    padding:12px 16px;
+    font-family:Verdana, sans-serif;
+    font-size:.82rem;
+    line-height:1.8;
+    margin-bottom:20px;
+  }
+  .wordbank strong{font-family:Georgia, serif;font-size:.9rem;}
+  #cloze-text{
+    line-height:2.2;
+    font-size:1.05rem;
+    margin-bottom:24px;
+  }
+  #cloze-text input{
+    font-family:Verdana, sans-serif;
+    font-size:.95rem;
+    padding:2px 6px;
+    border:1px solid #999;
+    border-radius:2px;
+    background:#fff;
+    width:140px;
+    margin:0 3px;
+  }
+  #cloze-text input.correct{
+    background:#d4edda;
+    border-color:var(--correct);
+    color:var(--correct);
+    font-weight:bold;
+  }
+  #cloze-text input.wrong{
+    background:#f8d7da;
+    border-color:var(--wrong);
+    color:var(--wrong);
+  }
+  .cloze-feedback{
+    font-family:Verdana, sans-serif;
+    font-size:.9rem;
+    margin-top:12px;
+    font-weight:bold;
+  }
+  .qcard{
+    background:#fff;
+    border:1px solid var(--rule);
+    padding:18px 20px;
+    margin-bottom:16px;
+  }
+  .qcard p.q{
+    margin:0 0 12px;
+    font-weight:bold;
+    font-size:1rem;
+  }
+  .qcard label{
+    display:block;
+    font-family:Verdana, sans-serif;
+    font-size:.88rem;
+    margin-bottom:8px;
+    cursor:pointer;
+    padding:6px 8px;
+    border-radius:3px;
+  }
+  .qcard label:hover{background:var(--parchment);}
+  .qcard label.correct{
+    background:#d4edda;
+    color:var(--correct);
+    font-weight:bold;
+  }
+  .qcard label.wrong{
+    background:#f8d7da;
+    color:var(--wrong);
+  }
+  #score-box{
+    margin-top:20px;
+    padding:14px 18px;
+    background:var(--parchment-dark);
+    border-left:4px solid var(--teal);
+    font-family:Verdana, sans-serif;
+    font-size:.95rem;
+    font-weight:bold;
+    display:none;
+  }
+  footer{
+    text-align:center;
+    font-family:Verdana, sans-serif;
+    font-size:.75rem;
+    color:#7a7259;
+    padding:20px 6vw 40px;
+  }
+  .home-link{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:Verdana, sans-serif; font-size:.78rem; font-weight:bold;
+    color:var(--natgeo-yellow); text-decoration:none;
+    border:1.5px solid var(--natgeo-yellow); border-radius:20px;
+    padding:6px 14px; margin-bottom:16px;
+    transition:background .15s, color .15s;
+  }
+  .home-link:hover{ background:var(--natgeo-yellow); color:var(--ink); }
+  .level-switch{
+    font-family:Verdana, sans-serif;
+    font-size:.85rem;
+    font-weight:bold;
+    color:var(--teal);
+    text-decoration:none;
+    display:inline-block;
+    padding:6px 12px;
+    background:#fff;
+    border:1px solid var(--rule);
+    border-radius:3px;
+  }
+  .level-switch:hover{
+    background:var(--teal);
+    color:#fff;
+  }
+  </style>
+</head>
+<body>
+<div class="frame">
+  <header>
+    <a class="home-link" href="https://jenlin2002.github.io/nat-geo-reading/">🏠 回總目錄</a><br>
+    <p class="eyebrow">Nat-Geo Reading Series &middot; 極端氣候 &middot; 進階版 US 6–8</p>
+    <h1>Mega-Cyclones: Thermodynamic Carnot Engines and Coastal Hazards</h1>
+    <p class="subtitle">Barometric gradients, Coriolis deflection, and eyewall replacement cycles</p>
+  </header>
+
+  <nav class="tabs">
+    <button class="tab-btn active" data-tab="reading">📖 Reading</button>
+    <button class="tab-btn" data-tab="vocab">🔤 Vocabulary</button>
+    <button class="tab-btn" data-tab="cloze">✏️ Cloze Test</button>
+    <button class="tab-btn" data-tab="listening">🎧 Listening</button>
+    <button class="tab-btn" data-tab="comprehension">🧠 Comprehension</button>
+  </nav>
+
+  <div style="padding:10px 6vw 0;text-align:right;">
+    <a class="level-switch" href="week13-superstorms-hurricanes-easy.html">切換至簡化版 A2–B1 →</a>
+  </div>
+
+  <main>
+    <!-- ================= READING ================= -->
+    <section class="panel active" id="reading">
+      <div class="video-wrap">
+        <iframe src="https://www.youtube.com/embed/bXvN_g1OqgU" title="Hurricanes 101 - National Geographic" allowfullscreen></iframe>
+      </div>
+      <figure>
+        <figcaption>Dual-Doppler radar slicing through the convective eyewall of an intensifying Category 5 cyclone.</figcaption>
+      </figure>
+
+      <div class="toolbar">
+        <button class="action-btn" id="play-full">▶ Play Article Audio</button>
+        <button class="action-btn" id="stop-full" style="background:var(--brown);">■ Stop</button>
+        <span style="color:#777;font-size:.8rem;margin-left:auto;">Click any sentence to listen &middot; 點擊任一句子單獨發音</span>
+      </div>
+
+      <div class="article" id="article-body"></div>
+    </section>
+
+    <!-- ================= VOCAB ================= -->
+    <section class="panel" id="vocab">
+      <h2 class="section-title">Key Vocabulary</h2>
+      <div class="vocab-grid" id="vocab-grid"></div>
+    </section>
+
+    <!-- ================= CLOZE ================= -->
+    <section class="panel" id="cloze">
+      <h2 class="section-title">Cloze Test</h2>
+      <p style="font-family:Verdana, sans-serif;font-size:.85rem;">Fill in each blank with the correct word from the word bank. Then click "Check Answers."</p>
+      <div class="wordbank">
+        <strong>Word bank:</strong> hurricane &middot; evaporation &middot; pressure &middot; vortex &middot; surge &middot; devastating &middot; atmosphere &middot; category &middot; moisture &middot; meteorologist
+      </div>
+      <div id="cloze-text">When intense solar heat warms equatorial oceans, water ascends into the <input data-a="0"> through rapid <input data-a="1">. This rising thermal vapor delivers abundant <input data-a="2">, lowering barometric <input data-a="3"> near sea level.<br><br>As surrounding air rushes in, a powerful <input data-a="4"> begins to spin. The tightest winds swirl within the eyewall <input data-a="5">. If winds surpass 157 mph, the tempest is classified as a top <input data-a="6"> disaster.<br><br>When reaching shore, rising seawater creates a catastrophic storm <input data-a="7">, delivering <input data-a="8"> coastal floods. Dedicated <input data-a="9"> teams track these superstorms to safeguard lives.</div>
+      <button class="action-btn" id="check-cloze">Check Answers</button>
+      <div class="cloze-feedback" id="cloze-result"></div>
+    </section>
+
+    <!-- ================= LISTENING ================= -->
+    <section class="panel" id="listening">
+      <h2 class="section-title">Listening Comprehension</h2>
+      <div class="toolbar">
+        <button class="action-btn" id="play-listen">▶ Play Article Audio</button>
+        <button class="action-btn" id="stop-listen" style="background:var(--brown);">■ Stop</button>
+        <span style="color:#777;font-size:.8rem;margin-left:auto;">Listen carefully, then answer the questions below.</span>
+      </div>
+      <div id="listening-qs"></div>
+      <button class="action-btn" id="check-listening">Check Listening Answers</button>
+      <div class="cloze-feedback" id="listening-result"></div>
+    </section>
+
+    <!-- ================= COMPREHENSION ================= -->
+    <section class="panel" id="comprehension">
+      <h2 class="section-title">Reading Comprehension</h2>
+      <div id="comp-qs"></div>
+      <button class="action-btn" id="check-comp">Check Comprehension Answers</button>
+      <div id="score-box"></div>
+    </section>
+  </main>
+
+  <footer>
+    National Geographic–style Reading Series &middot; 自製英文閱讀教材 &middot; Week 13
+  </footer>
+</div>
+
+<script>
+/* ---------- article sentences ---------- */
+const sentences = ["Tropical cyclones—known regionally as hurricanes in the Atlantic and typhoons in the northwestern Pacific—operate as nature’s most formidable thermodynamic Carnot heat engines.","5 degrees Celsius down to a depth of fifty meters, minimal vertical tropospheric wind shear, high mid-atmospheric humidity, and sufficient Coriolis deflection to organize cyclonic rotation.","As latent heat of vaporization is extracted from tropical waters, rapidly ascending air columns create an extreme barometric pressure deficit at the cyclone’s core.","Air accelerates inward along steep pressure gradients, deflecting into a cyclostrophic vortex.","At the eyewall—a towering ring of cumulonimbus towers encircling the cloud-free, subsiding eye—centrifugal forces and condensation liberate immense quantities of latent heat, fueling wind velocities capable of exceeding 160 knots.","Anthropogenic climate forcing is exacerbating these meteorological monsters.","Warmer ocean columns store greater thermal enthalpy, fostering rapid intensification—the phenomenon where a storm elevates its sustained winds by at least thirty knots within twenty-four hours.","Upon landfall, the combined catastrophe of barometric suction and hurricane-force onshore winds generates catastrophic storm surges, flooding coastal infrastructure and redefining modern disaster preparedness."];
+
+const articleDiv = document.getElementById('article-body');
+let currentP = document.createElement('p');
+
+sentences.forEach((s, i) => {
+  const span = document.createElement('span');
+  span.className = 'sent';
+  span.id = 'sent' + i;
+  span.dataset.i = i;
+  span.textContent = s;
+
+  const ctrl = document.createElement('span');
+  ctrl.className = 'sent-ctrl';
+  ctrl.textContent = ' 🔊';
+  span.appendChild(ctrl);
+
+  currentP.appendChild(span);
+  currentP.appendChild(document.createTextNode(' '));
+
+  // create a new paragraph every ~4-5 sentences
+  if ((i + 1) % 4 === 0 && i !== sentences.length - 1) {
+    articleDiv.appendChild(currentP);
+    currentP = document.createElement('p');
+  }
+});
+articleDiv.appendChild(currentP);
+
+/* ---------- TTS ---------- */
+let englishVoice = null;
+let voicesReady = false;
+
+function loadVoices(){
+  const voices = window.speechSynthesis.getVoices();
+  if(voices && voices.length){
+    englishVoice = voices.find(v => v.lang === 'en-US') || voices.find(v => v.lang && v.lang.startsWith('en')) || voices[0];
+    voicesReady = true;
+  }
+}
+if('speechSynthesis' in window){
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+function clearHighlight(){
+  document.querySelectorAll('.sent').forEach(s => s.classList.remove('speaking'));
+}
+
+function makeUtterance(text, rate){
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US';
+  u.rate = rate || 0.92;
+  if(englishVoice) u.voice = englishVoice;
+  return u;
+}
+
+let userStopped = false;
+
+function speakSentence(i){
+  if(!('speechSynthesis' in window)) return;
+  userStopped = false;
+  window.speechSynthesis.cancel();
+  clearHighlight();
+  const u = makeUtterance(sentences[i]);
+  const el = document.getElementById('sent' + i);
+  u.onstart = () => { el && el.classList.add('speaking'); };
+  u.onend = () => { el && el.classList.remove('speaking'); };
+  u.onerror = () => { el && el.classList.remove('speaking'); };
+  window.speechSynthesis.speak(u);
+}
+
+function speakAll(onDone){
+  if(!('speechSynthesis' in window)) return;
+  userStopped = false;
+  window.speechSynthesis.cancel();
+  clearHighlight();
+  let i = 0;
+  function next(){
+    if(userStopped) return;
+    if(i >= sentences.length){
+      clearHighlight();
+      if(onDone) onDone();
+      return;
+    }
+    const u = makeUtterance(sentences[i]);
+    const el = document.getElementById('sent' + i);
+    clearHighlight();
+    u.onstart = () => {
+      el && el.classList.add('speaking');
+      el && el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+    u.onend = () => { if(userStopped) return; i++; next(); };
+    u.onerror = () => { if(userStopped) return; i++; next(); };
+    window.speechSynthesis.speak(u);
+  }
+  next();
+}
+
+function speakWord(word){
+  if(!('speechSynthesis' in window)) return;
+  userStopped = false;
+  window.speechSynthesis.cancel();
+  const u = makeUtterance(word, 0.85);
+  window.speechSynthesis.speak(u);
+}
+
+function stopSpeaking(){
+  userStopped = true;
+  window.speechSynthesis.cancel();
+  clearHighlight();
+}
+
+document.addEventListener('click', e => {
+  const sentEl = e.target.closest('.sent');
+  if(sentEl && sentEl.dataset.i !== undefined){
+    speakSentence(parseInt(sentEl.dataset.i));
+  }
+  if(e.target.matches('.spk') && e.target.dataset.word){
+    speakWord(e.target.dataset.word);
+  }
+});
+
+document.getElementById('play-full').onclick = () => speakAll();
+document.getElementById('stop-full').onclick = stopSpeaking;
+document.getElementById('play-listen').onclick = () => speakAll();
+document.getElementById('stop-listen').onclick = stopSpeaking;
+
+/* ---------- tabs ---------- */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.onclick = () => {
+    window.speechSynthesis.cancel();
+    clearHighlight();
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  };
+});
+
+/* ---------- vocabulary ---------- */
+const vocab = [
+  {
+    "w": "hurricane",
+    "zh": "颶風",
+    "pos": "n.",
+    "def": "a violent tropical storm with high-speed swirling winds",
+    "ex": "The hurricane made landfall along the coast."
+  },
+  {
+    "w": "evaporation",
+    "zh": "蒸發（作用）",
+    "pos": "n.",
+    "def": "the process of turning from liquid into vapor",
+    "ex": "Warm ocean evaporation powers the storm engine."
+  },
+  {
+    "w": "pressure",
+    "zh": "氣壓、壓力",
+    "pos": "n.",
+    "def": "the force exerted by atmospheric weight",
+    "ex": "Low air pressure at the center indicates a strong storm."
+  },
+  {
+    "w": "vortex",
+    "zh": "旋渦、旋風",
+    "pos": "n.",
+    "def": "a mass of whirling fluid or air",
+    "ex": "The eyewall forms a dangerous spiraling vortex."
+  },
+  {
+    "w": "surge",
+    "zh": "風暴潮、湧浪",
+    "pos": "n.",
+    "def": "a sudden powerful forward or upward movement of water",
+    "ex": "The storm surge flooded coastal highways."
+  },
+  {
+    "w": "devastating",
+    "zh": "毀滅性的",
+    "pos": "adj.",
+    "def": "highly destructive or causing immense damage",
+    "ex": "Flooding caused devastating losses for farmers."
+  },
+  {
+    "w": "atmosphere",
+    "zh": "大氣（層）",
+    "pos": "n.",
+    "def": "the envelope of gases surrounding the earth",
+    "ex": "Warm moist air rises quickly into the atmosphere."
+  },
+  {
+    "w": "category",
+    "zh": "等級、類別",
+    "pos": "n.",
+    "def": "a class or division of things having particular characteristics",
+    "ex": "A Category 5 storm carries winds over 157 mph."
+  },
+  {
+    "w": "moisture",
+    "zh": "水分、濕氣",
+    "pos": "n.",
+    "def": "water or other liquid diffused as vapor",
+    "ex": "Tropical air holds abundant moisture."
+  },
+  {
+    "w": "meteorologist",
+    "zh": "氣象學家",
+    "pos": "n.",
+    "def": "a scientist who studies weather conditions and forecasting",
+    "ex": "The meteorologist predicted the cyclone's trajectory."
+  }
+];
+const vg = document.getElementById('vocab-grid');
+vocab.forEach(v => {
+  const c = document.createElement('div');
+  c.className = 'vocab-card';
+  c.innerHTML = `<span class="w">${v.w}</span><span class="pos">${v.pos}</span>
+    <button class="spk" data-word="${v.w}" title="Listen" style="opacity:.85;">🔊</button>
+    <div class="zh" style="font-family:'Microsoft JhengHei', sans-serif; color:var(--brown); font-size:.85rem; margin:4px 0;">${v.zh}</div>
+    <div class="def">${v.def}</div>
+    <div class="ex">"${v.ex}"</div>`;
+  vg.appendChild(c);
+});
+
+/* ---------- cloze ---------- */
+const clozeAnswers = ["atmosphere","evaporation","moisture","pressure","hurricane","vortex","category","surge","devastating","meteorologist"];
+
+document.getElementById('check-cloze').onclick = () => {
+  const inputs = document.querySelectorAll('#cloze-text input');
+  let correct = 0;
+  inputs.forEach(inp => {
+    const ans = clozeAnswers[parseInt(inp.dataset.a)];
+    const val = inp.value.trim();
+    if(val.toLowerCase() === ans.toLowerCase()){
+      inp.classList.add('correct');
+      inp.classList.remove('wrong');
+      correct++;
+    } else {
+      inp.classList.add('wrong');
+      inp.classList.remove('correct');
+    }
+  });
+  document.getElementById('cloze-result').textContent = `得分: ${correct} / ${inputs.length} 正確`;
+  sendResult('克漏字 Cloze', correct, inputs.length);
+};
+
+/* ---------- helper for MCQs ---------- */
+function buildMC(container, list, namePrefix){
+  list.forEach((item, i) => {
+    const card = document.createElement('div');
+    card.className = 'qcard';
+    let optsHTML = item.opts.map((o, j) =>
+      `<label><input type="radio" name="${namePrefix}${i}" value="${j}"> ${o}</label>`
+    ).join('');
+    card.innerHTML = `<p class="q">${i+1}. ${item.q}</p>${optsHTML}`;
+    container.appendChild(card);
+  });
+}
+
+/* ---------- listening ---------- */
+const listeningQs = [
+  {
+    "q": "What physical force imparts rotational spin to tropical cyclones?",
+    "opts": [
+      "The Coriolis effect resulting from Earth's planetary rotation",
+      "Lunar gravitational friction",
+      "Magnetic polarity shifts",
+      "Jet stream downdrafts"
+    ],
+    "correct": 0
+  },
+  {
+    "q": "Why is vertical wind shear detrimental to developing hurricanes?",
+    "opts": [
+      "It freezes the ocean surface",
+      "It tears apart the vertical convective cloud structure before a vortex can organize",
+      "It increases atmospheric pressure too fast",
+      "It attracts thunderclouds away"
+    ],
+    "correct": 1
+  },
+  {
+    "q": "What term defines a rapid jump in sustained storm wind speed of 30+ knots within 24 hours?",
+    "opts": [
+      "Cyclonic stalling",
+      "Rapid intensification",
+      "Eyewall collapse",
+      "Barometric stabilization"
+    ],
+    "correct": 1
+  },
+  {
+    "q": "Where within a hurricane are the highest wind speeds and most intense updrafts recorded?",
+    "opts": [
+      "Inside the dead center of the eye",
+      "Along the outer rainbands 300 miles away",
+      "Directly in the eyewall surrounding the eye",
+      "At the stratosphere top"
+    ],
+    "correct": 2
+  }
+];
+buildMC(document.getElementById('listening-qs'), listeningQs, 'listen');
+
+document.getElementById('check-listening').onclick = () => {
+  let listenCorrect = 0;
+  listeningQs.forEach((item, i) => {
+    document.getElementsByName('listen' + i).forEach(radio => {
+      const label = radio.parentElement;
+      label.classList.remove('correct', 'wrong');
+      if(parseInt(radio.value) === item.correct && radio.checked){
+        label.classList.add('correct');
+        listenCorrect++;
+      } else if(radio.checked){
+        label.classList.add('wrong');
+      } else if(parseInt(radio.value) === item.correct){
+        label.classList.add('correct');
+      }
+    });
+  });
+  document.getElementById('listening-result').textContent = `得分: ${listenCorrect} / ${listeningQs.length} 正確`;
+  sendResult('聽力 Listening', listenCorrect, listeningQs.length);
+};
+
+/* ---------- comprehension ---------- */
+const compQs = [
+  {
+    "q": "Why does the author liken a hurricane to a 'Carnot heat engine'?",
+    "opts": [
+      "Because it runs on gasoline and diesel exhaust",
+      "Because it extracts thermal energy from warm sea surface water and converts it into kinetic wind mechanical work before dissipating heat into the colder upper atmosphere",
+      "Because it produces electricity for nearby cities",
+      "Because it was engineered in a French laboratory"
+    ],
+    "correct": 1
+  },
+  {
+    "q": "According to the article, how does ocean warming directly influence cyclone behavior?",
+    "opts": [
+      "It prevents hurricanes from ever making landfall",
+      "It increases available thermal enthalpy, raising the upper ceiling of storm intensity and accelerating rapid intensification events",
+      "It turns all hurricanes into snow blizzards",
+      "It neutralizes storm surge waves"
+    ],
+    "correct": 1
+  },
+  {
+    "q": "Which combination of elements creates catastrophic storm surges during landfall?",
+    "opts": [
+      "Earthquake faulting and underwater landslides",
+      "Severe onshore wind stress pushing ocean water forward coupled with inverted barometric sea level rise",
+      "Freshwater river runoff overflowing dams",
+      "High solar tides occurring at noon"
+    ],
+    "correct": 1
+  },
+  {
+    "q": "In paragraph 1, what does the term 'convection' imply in atmospheric physics?",
+    "opts": [
+      "Horizontal movement of ocean currents",
+      "The vertical transfer of heat through the upward movement of warm, less dense air",
+      "The freezing of raindrops into hail",
+      "The absorption of sunlight by clouds"
+    ],
+    "correct": 1
+  }
+];
+buildMC(document.getElementById('comp-qs'), compQs, 'comp');
+
+document.getElementById('check-comp').onclick = () => {
+  let correctCount = 0;
+  compQs.forEach((item, i) => {
+    document.getElementsByName('comp' + i).forEach(radio => {
+      const label = radio.parentElement;
+      label.classList.remove('correct', 'wrong');
+      if(parseInt(radio.value) === item.correct){
+        label.classList.add('correct');
+        if(radio.checked) correctCount++;
+      } else if(radio.checked){
+        label.classList.add('wrong');
+      }
+    });
+  });
+  const box = document.getElementById('score-box');
+  box.style.display = 'block';
+  box.textContent = `閱讀理解得分: ${correctCount} / ${compQs.length}`;
+  sendResult('閱讀理解 Comprehension', correctCount, compQs.length);
+};
+
+/* ---------- Google Sheets sync ---------- */
+function sendResult(quizType, score, total){
+  const name = localStorage.getItem('ngr_studentName') || '';
+  const url = localStorage.getItem('ngr_syncUrl') || '';
+  if(!url) return;
+  fetch(url, {
+    method: 'POST',
+    mode: 'no-cors',
+    headers: { 'Content-Type': 'text/plain' },
+    body: JSON.stringify({
+      name: name,
+      unit: document.title,
+      quizType: quizType,
+      score: score,
+      total: total,
+      timestamp: new Date().toISOString()
+    })
+  }).catch(() => {});
+}
+</script>
+</body>
+</html>
