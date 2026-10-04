@@ -92,10 +92,22 @@
       document.querySelectorAll(q.box + ' input').forEach(function (i) { i.disabled = true; });   // 送出後答案鎖住
       if (typeof showResult === 'function') showResult.call(btn);                                  // 畫面顯示每題對錯與正確答案
       if (window.Points) { try { Points.earn({ name: name, label: label, mode: q.type, correct: g.score, total: g.total }); } catch (e) {} }
+      q.sent = true;
       post(name, q, g).then(function () {
         btn.textContent = '已送出成績（' + g.score + ' / ' + g.total + '）';
         doneNames.push(q.name);
         refreshStatus();
+        // 送出這一項之後，提醒其他還沒完成的單元
+        var todo = [];
+        QUIZZES.forEach(function (o) {
+          if (o.sent) return;
+          var og = o.grade();
+          todo.push(og.answered < og.total ? (o.name + '還有 ' + (og.total - og.answered) + ' 題沒作答') : (o.name + '已作答完，還沒按「送出成績」'));
+        });
+        var msg = '「' + q.name + '」已送出成績：' + g.score + ' / ' + g.total + ' 題答對（畫面已標出每題對錯與正確答案）。';
+        if (todo.length) msg += '\n\n還有單元沒完成：\n' + todo.join('\n');
+        else msg += '\n\n三個單元都完成了，太棒了！';
+        setTimeout(function () { alert(msg); }, 50);
       });
     };
   });
