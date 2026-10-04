@@ -524,6 +524,7 @@ document.getElementById('check-cloze').onclick = ()=>{
     else { inp.classList.add('wrong'); inp.classList.remove('correct'); }
   });
   document.getElementById('cloze-result').textContent = `${correct} / ${inputs.length} correct`;
+  sendResult('克漏字 Cloze', correct, inputs.length);
 };
 
 /* ---------- listening questions ---------- */
@@ -548,15 +549,17 @@ function buildMC(container, list, namePrefix){
 }
 buildMC(document.getElementById('listening-qs'), listeningQs, 'listen');
 document.getElementById('check-listening').onclick = ()=>{
+  let listenCorrect=0;
   listeningQs.forEach((item,i)=>{
     document.getElementsByName('listen'+i).forEach(radio=>{
       const label = radio.parentElement;
       label.classList.remove('correct','wrong');
-      if(parseInt(radio.value)===item.correct && radio.checked) label.classList.add('correct');
+      if(parseInt(radio.value)===item.correct && radio.checked){ label.classList.add('correct'); listenCorrect++; }
       else if(radio.checked) label.classList.add('wrong');
       else if(parseInt(radio.value)===item.correct) label.classList.add('correct');
     });
   });
+  sendResult('聽力 Listening', listenCorrect, listeningQs.length);
 };
 
 /* ---------- reading comprehension ---------- */
@@ -584,7 +587,10 @@ document.getElementById('check-comp').onclick = ()=>{
   const box = document.getElementById('score-box');
   box.style.display='block';
   box.textContent = `Reading Comprehension Score: ${correctCount} / ${compQs.length}`;
+  sendResult('閱讀理解 Comprehension', correctCount, compQs.length);
 };
 </script>
+<script src="points.js"></script>
+<script src="points-glue.js"></script>
 </body>
 </html>
