@@ -1,4 +1,4 @@
-/* 國家地理閱讀 × 學習點數存摺／成績試算表：
+/* 國家地理閱讀 × 學習點數存摺／成績試算表（2026-10-18 起訂正規則統一以段考題庫為準，見 fixkit.js）：
  *   三項測驗（克漏字、聽力、閱讀理解）底下的按鈕原本是「Check Answers」，現在都改成「送出成績」：
  *   按下去 → 全部作答才能送 → 畫面顯示每題對錯與正確答案 → 自動帶「登入者」的名字，
  *   ① 記學習點數（Points.earn）、② 把成績和每題明細送到和英文測驗系統同一份 Google 試算表 → 這一項答案鎖住。
@@ -33,82 +33,99 @@
   // 原本各頁的 sendResult 會在按 Check 時送成績；現在由「送出成績」按鈕統一處理
   window.sendResult = function () {};
 
-  function gradeMC(qs, pre) {
-    var score = 0, answered = 0, rows = [];
-    qs.forEach(function (it, i) {
-      var r = document.querySelector('input[name=' + pre + i + ']:checked');
-      var ok = !!r && parseInt(r.value, 10) === it.correct;
-      if (r) answered++;
-      if (ok) score++;
-      rows.push({ q: it.q, picked: r ? it.opts[parseInt(r.value, 10)] : '（未作答）', correct: it.opts[it.correct], isCorrect: ok });
+  // 測驗規則統一以段考題庫為準（2026-10-18）：送出 → 對答案 → 訂正錯誤到全對補送 1 點、暫存（fixkit.js，和英文測驗系統、美式生活館共用）
+  function clozeItems() {
+    return Array.prototype.map.call(document.querySelectorAll('#cloze-text input'), function (inp) {
+      var idx = parseInt(inp.dataset.a, 10), ans = String(clozeAnswers[idx]);
+      function tip() { return inp.nextElementSibling && inp.nextElementSibling.classList.contains('fk-ans') ? inp.nextElementSibling : null; }
+      return {
+        el: inp, q: '空格 ' + (idx + 1), correct: ans,
+        value: function () { return inp.value.trim(); },
+        right: function () { return inp.value.trim().toLowerCase() === ans.toLowerCase(); },
+        clear: function () { inp.value = ''; }, set: function (v) { inp.value = v; },
+        lock: function (on) { inp.disabled = on; },
+        mark: function () {
+          var ok = this.right(); inp.classList.toggle('correct', ok); inp.classList.toggle('wrong', !ok);
+          if (!ok && !tip()) { var t = document.createElement('span'); t.className = 'fk-ans'; t.textContent = '→ ' + ans; inp.insertAdjacentElement('afterend', t); }
+        },
+        unmark: function () { inp.classList.remove('correct', 'wrong'); var t = tip(); if (t) t.remove(); }
+      };
     });
-    return { score: score, total: qs.length, answered: answered, details: rows };
   }
-  function gradeCloze() {
-    var inputs = document.querySelectorAll('#cloze-text input'), score = 0, answered = 0, rows = [];
-    inputs.forEach(function (inp) {
-      var idx = parseInt(inp.dataset.a, 10), ans = clozeAnswers[idx], val = inp.value.trim();
-      var ok = val.toLowerCase() === String(ans).toLowerCase();
-      if (val) answered++;
-      if (ok) score++;
-      rows.push({ q: '空格 ' + (idx + 1), picked: val || '（未作答）', correct: ans, isCorrect: ok });
+  function mcItems(list, pre) {
+    return list.map(function (it, i) {
+      var radios = function () { return Array.prototype.slice.call(document.getElementsByName(pre + i)); };
+      var picked = function () { var r = radios().filter(function (x) { return x.checked; })[0]; return r ? parseInt(r.value, 10) : -1; };
+      var first = radios()[0];
+      return {
+        el: first ? (first.closest('.qcard') || first.parentElement) : document.body, q: it.q, correct: it.opts[it.correct],
+        value: function () { var p = picked(); return p < 0 ? '' : it.opts[p]; },
+        right: function () { return picked() === it.correct; },
+        clear: function () { radios().forEach(function (r) { r.checked = false; }); },
+        set: function (v) { var j = it.opts.indexOf(v); radios().forEach(function (r) { r.checked = parseInt(r.value, 10) === j; }); },
+        lock: function (on) { radios().forEach(function (r) { r.disabled = on; }); },
+        mark: function () {
+          var p = picked();
+          radios().forEach(function (r) { var v = parseInt(r.value, 10), lb = r.parentElement; lb.classList.remove('correct', 'wrong'); if (v === it.correct) lb.classList.add('correct'); else if (v === p) lb.classList.add('wrong'); });
+        },
+        unmark: function () { radios().forEach(function (r) { r.parentElement.classList.remove('correct', 'wrong'); }); }
+      };
     });
-    return { score: score, total: inputs.length, answered: answered, details: rows };
   }
 
   var QUIZZES = [
-    { btn: 'check-cloze', box: '#cloze-text', type: '克漏字 Cloze', name: '克漏字', grade: gradeCloze },
-    { btn: 'check-listening', box: '#listening-qs', type: '聽力 Listening', name: '聽力', grade: function () { return gradeMC(listeningQs, 'listen'); } },
-    { btn: 'check-comp', box: '#comp-qs', type: '閱讀理解 Comprehension', name: '閱讀理解', grade: function () { return gradeMC(compQs, 'comp'); } }
+    { btn: 'check-cloze', box: '#cloze-text', type: '克漏字 Cloze', name: '克漏字', items: clozeItems,
+      after: function (sc, tot) { var r = document.getElementById('cloze-result'); if (r) r.textContent = sc + ' / ' + tot + ' correct'; } },
+    { btn: 'check-listening', box: '#listening-qs', type: '聽力 Listening', name: '聽力', items: function () { return mcItems(listeningQs, 'listen'); } },
+    { btn: 'check-comp', box: '#comp-qs', type: '閱讀理解 Comprehension', name: '閱讀理解', items: function () { return mcItems(compQs, 'comp'); },
+      after: function (sc, tot) { var b = document.getElementById('score-box'); if (b) { b.style.display = 'block'; b.textContent = 'Reading Comprehension Score: ' + sc + ' / ' + tot; } } }
   ];
 
-  function post(name, quiz, g) {
-    if (name === 'PARENT') return Promise.resolve();   // 家長測試不寫進孩子的成績單
+  function post(name, quiz, suffix, rows, score, total) {
     return fetch(get('quizSyncUrl') || DEFAULT_SYNC_URL, {
       method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-      body: JSON.stringify({ name: name, week: label, mode: quiz.type, score: g.score, total: g.total, percent: g.total ? Math.round(g.score / g.total * 100) : 0, details: g.details })
+      body: JSON.stringify({ name: name, week: label, mode: quiz.type + suffix, score: score, total: total, percent: total ? Math.round(score / total * 100) : 0, details: rows })
     }).catch(function () {});
   }
 
   // 題目說明裡的「click "Check Answers."」也一起改
   document.querySelectorAll('#cloze p').forEach(function (p) {
-    p.innerHTML = p.innerHTML.replace(/Then click\s*(&quot;|")Check Answers\.?(&quot;|")\.?/i, '作答完畢後，按下面的「送出成績」，會顯示每題對錯與正確答案。');
+    p.innerHTML = p.innerHTML.replace(/Then click\s*(&quot;|")Check Answers\.?(&quot;|")\.?/i, '作答完畢後，按下面的「送出成績」，會顯示每題對錯與正確答案；答錯的題目要按上方「✏️ 訂正錯誤」訂正到全對。');
   });
 
-  QUIZZES.forEach(function (q) {
-    var btn = document.getElementById(q.btn);
-    if (!btn) return;
-    var showResult = btn.onclick;   // 頁面原本的「對答案、標出對錯與正解」
-    var sent = false;
-    btn.textContent = '送出成績';
-    btn.onclick = function () {
-      if (sent) return;
-      var name = student();
-      if (!name) { alert('請先登入（在「你是誰？」選名字並輸入 PIN），成績才會記在你的名下'); return; }
-      var g = q.grade();
-      if (g.answered < g.total) { alert('「' + q.name + '」還有 ' + (g.total - g.answered) + ' 題沒作答，請先完成再送出成績'); return; }
-      sent = true;
-      btn.disabled = true; btn.style.opacity = '.6'; btn.style.cursor = 'not-allowed'; btn.textContent = '送出中...';
-      document.querySelectorAll(q.box + ' input').forEach(function (i) { i.disabled = true; });   // 送出後答案鎖住
-      if (typeof showResult === 'function') showResult.call(btn);                                  // 畫面顯示每題對錯與正確答案
-      if (window.Points) { try { Points.earn({ name: name, label: label, mode: q.type, correct: g.score, total: g.total }); } catch (e) {} }
-      q.sent = true;
-      post(name, q, g).then(function () {
-        btn.textContent = '已送出成績（' + g.score + ' / ' + g.total + '）';
-        doneNames.push(q.name);
-        refreshStatus();
-        // 送出這一項之後，提醒其他還沒完成的單元
-        var todo = [];
-        QUIZZES.forEach(function (o) {
-          if (o.sent) return;
-          var og = o.grade();
-          todo.push(og.answered < og.total ? (o.name + '還有 ' + (og.total - og.answered) + ' 題沒作答') : (o.name + '已作答完，還沒按「送出成績」'));
-        });
-        var msg = '「' + q.name + '」已送出成績：' + g.score + ' / ' + g.total + ' 題答對（畫面已標出每題對錯與正確答案）。';
-        if (todo.length) msg += '\n\n還有單元沒完成：\n' + todo.join('\n');
-        else msg += '\n\n三個單元都完成了，太棒了！';
-        setTimeout(function () { alert(msg); }, 50);
+  function init() {
+    QUIZZES.forEach(function (q) {
+      var btn = document.getElementById(q.btn), box = document.querySelector(q.box);
+      if (!btn || !box) return;
+      btn.textContent = '送出成績';
+      var panel = box.closest('section') || box;
+      var host = panel.querySelector('h2') ? panel.querySelector('h2').nextElementSibling || box : box;
+      q.kit = FixKit.make({
+        id: q.btn, name: q.name, host: host, box: box, btn: btn, items: q.items,
+        earn: { label: label, mode: q.type }, back: 'index.html',
+        post: function (name, suffix, rows, score, total) { return post(name, q, suffix, rows, score, total); },
+        onGraded: function (score, total, pending) {
+          if (q.after) q.after(score, total);
+          q.sent = true; doneNames.push(q.name); refreshStatus();
+          var todo = [];
+          QUIZZES.forEach(function (o) {
+            if (o.sent || !o.kit) return;
+            var its = o.items(), miss = its.filter(function (it) { return !it.value(); }).length;
+            todo.push(miss ? (o.name + '還有 ' + miss + ' 題沒作答') : (o.name + '已作答完，還沒按「送出成績」'));
+          });
+          var msg = '「' + q.name + '」已送出成績：' + score + ' / ' + total + ' 題答對（畫面已標出每題對錯與正確答案）。';
+          if (pending) msg += '\n\n有 ' + (total - score) + ' 題錯了，按上方「✏️ 訂正錯誤」訂正，全部訂正完再補送 1 點！';
+          msg += todo.length ? '\n\n還有單元沒完成：\n' + todo.join('\n') : '\n\n三個單元都送出了，太棒了！';
+          setTimeout(function () { alert(msg); }, 50);
+        }
       });
-    };
-  });
+    });
+  }
+  if (window.FixKit) init();
+  else {
+    var me = document.currentScript && document.currentScript.src, fk = document.createElement('script');
+    fk.src = (me ? me.replace(/[^\/]*$/, '') : '') + 'fixkit.js';
+    fk.onload = init;
+    document.head.appendChild(fk);
+  }
 })();
