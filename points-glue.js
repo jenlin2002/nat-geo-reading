@@ -124,7 +124,7 @@
   if (window.FixKit) init();
   else {
     var me = document.currentScript && document.currentScript.src, fk = document.createElement('script');
-    fk.src = (me ? me.replace(/[^\/]*$/, '') : '') + 'fixkit.js';
+    fk.src = (me ? me.replace(/[^\/]*$/, '') : '') + 'fixkit.js?v=20261018b';
     fk.onload = init;
     document.head.appendChild(fk);
   }
