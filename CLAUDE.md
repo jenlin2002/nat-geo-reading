@@ -25,6 +25,8 @@
 
 - **Android 安裝的 App 裡點測驗分頁沒反應（2026-10-24 修）**：那個 App 的瀏覽器沒有語音引擎（`window.speechSynthesis` 不存在），各頁的分頁按鈕先呼叫 `window.speechSynthesis.cancel()` 就出錯、分頁切不過去。31 頁的 `cancel()` 都改成 `window.speechSynthesis && window.speechSynthesis.cancel()`。**新頁面用到語音一律先判斷有沒有 speechSynthesis。**（英文測驗系統、美式生活館、圖解單字原本就有判斷，用沒有語音的瀏覽器模擬測過分頁都能切。）同時修了電腦版克漏字上方多出一條空的黃色框（`.fk-bar[hidden]` 沒藏起來）。版本號改 `?v=20261024a`。
 
+- **使用者的平板是 HarmonyOS（華為，沒有 Google 語音，2026-10-24）**：`points-glue.js` 開頭加了 ① 把 `speechSynthesis` 的 cancel／speak／pause／resume／getVoices 包一層 try（呼叫出錯就當作沒聲音），② 頁面出錯時畫面上方跳紅框（錯誤訊息＋瀏覽器版本 userAgent＋有沒有語音），請使用者截圖回報；分頁按鈕 1.5 秒後還沒綁好也會跳紅框。版本號 `?v=20261024b`。
+
 ## 連續學習紅利＋稱讚畫面（2026-10-18）
 
 - 送出測驗後跳出稱讚卡（得幾點、連續第幾天、還差幾點到 100 點）；每跨過 100 點跳出大的恭喜兌換畫面。
