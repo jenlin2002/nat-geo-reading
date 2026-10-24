@@ -28,7 +28,7 @@
   function anyPending() { return kits.some(function (k) { return k.pending; }); }
 
   var css = '.fk-bar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:12px 0;padding:10px 14px;border-radius:14px;background:#fff4dc;border:2px solid #e7c98a;font:600 14.5px/1.5 "Noto Sans TC","Microsoft JhengHei",sans-serif;color:#6b4a12}'
-    + '.fk-bar b{color:#c0392b}.fk-bar.done{background:#e8f5ec;border-color:#9ccfab;color:#1f6b3a}.fk-bar.done b{color:#1f6b3a}'
+    + '.fk-bar[hidden]{display:none !important}.fk-bar b{color:#c0392b}.fk-bar.done{background:#e8f5ec;border-color:#9ccfab;color:#1f6b3a}.fk-bar.done b{color:#1f6b3a}'
     + '.fk-bar button{background:#c0392b;color:#fff;border:0;border-radius:999px;padding:9px 18px;font:800 15px "Noto Sans TC","Microsoft JhengHei",sans-serif;cursor:pointer}'
     + '.fk-bar button[disabled]{background:#d8cdb4;color:#7a6a48;cursor:default}.fk-bar button.exit{background:#fff;color:#5a4a2a;border:1.5px solid #c9b88f}'
     + '.fk-bar a{display:inline-block;padding:7px 14px;border-radius:999px;background:#2f6fb5;color:#fff !important;font-weight:800;text-decoration:none}'

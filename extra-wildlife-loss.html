@@ -495,7 +495,7 @@ let userStopped = false;
 function speakSentence(i){
   if(!('speechSynthesis' in window)) return;
   userStopped = false;
-  window.speechSynthesis.cancel();
+  window.speechSynthesis && window.speechSynthesis.cancel();
   clearHighlight();
   const u = makeUtterance(sentences[i]);
   const el = document.getElementById('sent'+i);
@@ -507,7 +507,7 @@ function speakSentence(i){
 function speakAll(onDone){
   if(!('speechSynthesis' in window)) return;
   userStopped = false;
-  window.speechSynthesis.cancel();
+  window.speechSynthesis && window.speechSynthesis.cancel();
   clearHighlight();
   let i=0;
   function next(){
@@ -526,13 +526,13 @@ function speakAll(onDone){
 function speakWord(word){
   if(!('speechSynthesis' in window)) return;
   userStopped = false;
-  window.speechSynthesis.cancel();
+  window.speechSynthesis && window.speechSynthesis.cancel();
   const u = makeUtterance(word, 0.85);
   window.speechSynthesis.speak(u);
 }
 function stopSpeaking(){
   userStopped = true;
-  window.speechSynthesis.cancel();
+  window.speechSynthesis && window.speechSynthesis.cancel();
   clearHighlight();
 }
 document.addEventListener('click', e=>{
@@ -549,7 +549,7 @@ document.getElementById('stop-listen').onclick = stopSpeaking;
 /* ---------- tabs ---------- */
 document.querySelectorAll('.tab-btn').forEach(btn=>{
   btn.onclick = ()=>{
-    window.speechSynthesis.cancel(); clearHighlight();
+    window.speechSynthesis && window.speechSynthesis.cancel(); clearHighlight();
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('.panel').forEach(p=>p.classList.remove('active'));
     btn.classList.add('active');
@@ -667,6 +667,6 @@ document.getElementById('check-comp').onclick = ()=>{
 };
 </script>
 <script src="points.js"></script>
-<script src="points-glue.js?v=20261018b"></script>
+<script src="points-glue.js?v=20261024a"></script>
 </body>
 </html>
