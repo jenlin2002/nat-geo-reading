@@ -4,6 +4,38 @@
  *   ① 記學習點數（Points.earn）、② 把成績和每題明細送到和英文測驗系統同一份 Google 試算表 → 這一項答案鎖住。
  *   按之前答案都可以改。登入一次各網站通用（同一個網域，登入資料存在 localStorage 的 quizStudentName）。需要先載入 points.js。 */
 (function () {
+  // ---- 診斷（2026-10-24）：使用者的大陸平板 App 裡點分頁沒反應；頁面出錯時在畫面上方顯示紅框（錯誤訊息＋瀏覽器版本），方便截圖回報 ----
+  var diagBox = null, diagMsgs = [];
+  function showDiag(msg) {
+    if (diagMsgs.indexOf(msg) >= 0 || diagMsgs.length > 5) return;
+    diagMsgs.push(msg);
+    if (!diagBox) {
+      diagBox = document.createElement('div');
+      diagBox.style.cssText = 'position:fixed;left:8px;right:8px;top:8px;z-index:99999;background:#fff0f0;border:2px solid #c0392b;border-radius:10px;padding:10px 12px;font:13px/1.5 sans-serif;color:#7a1f14;max-height:60vh;overflow:auto;box-shadow:0 4px 16px rgba(0,0,0,.25)';
+      diagBox.onclick = function (e) { if (e.target.getAttribute('data-x')) diagBox.style.display = 'none'; };
+      (document.body || document.documentElement).appendChild(diagBox);
+    }
+    diagBox.innerHTML = '<b>⚠️ 這個瀏覽器執行網頁時出錯（請截圖給 Claude）</b> <button data-x="1" style="float:right">關閉</button><br>' +
+      diagMsgs.map(function (m) { return '• ' + String(m).replace(/</g, '&lt;'); }).join('<br>') +
+      '<br><small>' + String(navigator.userAgent).replace(/</g, '&lt;') + '｜語音：' + ('speechSynthesis' in window ? '有' : '沒有') + '</small>';
+  }
+  window.addEventListener('error', function (e) { showDiag((e.message || '錯誤') + (e.lineno ? '（第 ' + e.lineno + ' 行）' : '')); });
+  window.addEventListener('unhandledrejection', function (e) { var r = e.reason; if (r && /fetch|network|Load failed/i.test(String(r.message || r))) return; showDiag('Promise：' + (r && r.message || r)); });
+  // HarmonyOS 等沒有 Google 語音的系統：speechSynthesis 可能不存在或呼叫就出錯，包一層讓分頁、按鈕照常運作（只是沒聲音）
+  try {
+    var ss = window.speechSynthesis;
+    if (ss) ['cancel', 'speak', 'pause', 'resume', 'getVoices'].forEach(function (k) {
+      var f = ss[k]; if (typeof f !== 'function') return;
+      try { ss[k] = function () { try { return f.apply(ss, arguments); } catch (e) { return k === 'getVoices' ? [] : undefined; } }; } catch (e) {}
+    });
+  } catch (e) {}
+  setTimeout(function () {   // 頁面主程式有沒有跑起來：分頁按鈕應該已經綁好 onclick
+    var t = document.querySelector('.tab-btn');
+    if (t && !t.onclick) showDiag('頁面主程式沒有執行（分頁按鈕沒有綁定），多半是瀏覽器太舊、不支援網頁用到的語法');
+  }, 1500);
+})();
+
+(function () {
   var DEFAULT_SYNC_URL = 'https://script.google.com/macros/s/AKfycbwqd9cr_3MfXK8hzs8Y-YPQQUqOH5vKtW_vMav1nMAAt9VkBCP_5WP6Q1TDngIlr51U/exec';
   var mem = {};
   function get(k) { try { return localStorage.getItem(k); } catch (e) { return (k in mem) ? mem[k] : null; } }
@@ -124,7 +156,7 @@
   if (window.FixKit) init();
   else {
     var me = document.currentScript && document.currentScript.src, fk = document.createElement('script');
-    fk.src = (me ? me.replace(/[^\/]*$/, '') : '') + 'fixkit.js?v=20261024a';
+    fk.src = (me ? me.replace(/[^\/]*$/, '') : '') + 'fixkit.js?v=20261024b';
     fk.onload = init;
     document.head.appendChild(fk);
   }
