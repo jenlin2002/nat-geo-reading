@@ -125,6 +125,25 @@
     p.innerHTML = p.innerHTML.replace(/Then click\s*(&quot;|")Check Answers\.?(&quot;|")\.?/i, '作答完畢後，按下面的「送出成績」，會顯示每題對錯與正確答案；答錯的題目要按上方「✏️ 訂正錯誤」訂正到全對。');
   });
 
+  // ---- 我的字卡（2026-11-17）：Vocabulary 每張卡加「☆ 存字卡」，克漏字答錯的字自動加入「錯題」（/cards/cards.js）----
+  function vocabList() { try { return typeof vocab !== 'undefined' ? vocab : []; } catch (e) { return []; } }
+  function vocabCard(word) {
+    var w = String(word || ''), lw = w.toLowerCase(), v = null;
+    vocabList().forEach(function (x) { var k = String(x.w).toLowerCase(); if (!v && (k === lw || lw.indexOf(k) === 0 || k.indexOf(lw) === 0)) v = x; });
+    return v ? { en: v.w, zh: v.zh || '', pos: v.pos || '', ex: v.ex || '', exzh: v.def || '', src: 'NatGeo｜' + label.replace(/^NatGeo｜/, ''), url: location.pathname }
+      : { en: w, src: 'NatGeo｜' + label.replace(/^NatGeo｜/, ''), url: location.pathname };
+  }
+  function addStars() {
+    if (!window.Cards) return;
+    var list = vocabList();
+    Array.prototype.forEach.call(document.querySelectorAll('#vocab-grid .vocab-card'), function (c, i) {
+      if (c.querySelector('.ck-star') || !list[i]) return;
+      var spk = c.querySelector('.spk');
+      (spk || c.firstChild).insertAdjacentHTML('afterend', ' ' + Cards.btn(vocabCard(list[i].w)));
+    });
+  }
+  (function () { if (window.Cards) return addStars(); var cs = document.createElement('script'); cs.src = '/cards/cards.js?v=20261117a'; cs.onload = addStars; document.head.appendChild(cs); })();
+
   function init() {
     QUIZZES.forEach(function (q) {
       var btn = document.getElementById(q.btn), box = document.querySelector(q.box);
@@ -137,6 +156,10 @@
         earn: { label: label, mode: q.type }, back: 'index.html',
         post: function (name, suffix, rows, score, total) { return post(name, q, suffix, rows, score, total); },
         onGraded: function (score, total, pending) {
+          if (q.btn === 'check-cloze' && window.Cards) {   // 克漏字答錯的字自動加入「錯題」字卡
+            var wrongWords = q.items().filter(function (it) { return !it.right(); }).map(function (it) { return vocabCard(it.correct); });
+            if (wrongWords.length) Cards.addWrong(wrongWords);
+          }
           if (q.after) q.after(score, total);
           q.sent = true; doneNames.push(q.name); refreshStatus();
           var todo = [];
@@ -156,7 +179,7 @@
   if (window.FixKit) init();
   else {
     var me = document.currentScript && document.currentScript.src, fk = document.createElement('script');
-    fk.src = (me ? me.replace(/[^\/]*$/, '') : '') + 'fixkit.js?v=20261024b';
+    fk.src = (me ? me.replace(/[^\/]*$/, '') : '') + 'fixkit.js?v=20261117a';
     fk.onload = init;
     document.head.appendChild(fk);
   }
